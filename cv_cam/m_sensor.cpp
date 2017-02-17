@@ -462,7 +462,7 @@ void m_sensor::show(const Mat * input, const String fenster)
 void m_sensor::plot_graph(const String fenster)
 {
 	Mat xData, yData, display;
-	Ptr<plot::Plot2d> plot, plot1;
+	Ptr<plot::Plot2d> plot,plot1;
 	xData.create(1, POINTS_IN_CIRCLE - 1, CV_64F);//1 Row, 100 columns, Real
 	yData.create(1, POINTS_IN_CIRCLE - 1, CV_64F);
 
@@ -479,6 +479,7 @@ void m_sensor::plot_graph(const String fenster)
 	plot->setMinY(80);
 	plot->setPlotGridColor(Scalar(80, 80, 80));
 	plot->render(display);
+
 	imshow(fenster, display);
 }
 
