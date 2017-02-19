@@ -93,7 +93,8 @@ void sensor_set::magnify_selected_sensor(const Mat * input_image, const String m
 
 void sensor_set::check_sensors(const Mat * frame, int pegel)
 {
-	for (int m = 0; m < sensors.size(); m++) sensors[m].check(frame, pegel);
+	for (int m = 0; m < sensors.size(); m++) 
+		sensors[m].check(frame, pegel);
 }
 
 void sensor_set::add_keypoints(vector<Point>* key_points)

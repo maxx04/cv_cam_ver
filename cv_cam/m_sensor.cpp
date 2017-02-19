@@ -117,6 +117,7 @@ void m_sensor::check(const Mat * input, int pegel)
 
 void m_sensor::search_keypoints(short* values, int pegel)
 {
+	//HACK values sollen schon vorbereitet sein
 
 	// Glaetten
 	smooth_values(5);
@@ -127,52 +128,55 @@ void m_sensor::search_keypoints(short* values, int pegel)
 	ushort n_max_value = 0;
 	short min_value = 3000;
 	ushort n_min_value = 0;
-	short current_val;
+	short current_val, last_value, direction, last_direction;
+	short first_keypoint_number = 3000;
 
 	bool direction_change = false;
+	bool first_keypoint = true;
+	ushort half_size = size / 2;
+	ushort vp;
+	ushort direction_pegel = 0;
 
-	for (int n = 0; n < POINTS_IN_CIRCLE; n += 1)
+	int n = 0;
+	last_value = values[0];
+	last_direction = last_value - values[POINTS_IN_CIRCLE - 1];
+	n++;
+
+	do
 	{
+		if (n > POINTS_IN_CIRCLE - 1) n = 0;
 		current_val = values[n];
+		direction = current_val - last_value;
+		// Auswertung, Steigungwechsel und Prüfung auf maximum/minimum
+		// und Gereuschzone.
+		if ((current_val > pegel && direction < -direction_pegel && last_direction >= 0) ||
+			(current_val < -pegel && direction > direction_pegel && last_direction <= 0))
+		{
+			// Vorherige punkt nehmen
+			vp = (n == 0) ? POINTS_IN_CIRCLE - 1 : n - 1;
+			// locale maximum
+			key_points.push_back(Point(half_size + dx[vp], half_size + dy[vp]));
 
-		if (current_val > pegel)
-		{			
-			if (current_val > max_value)
+			if (first_keypoint) 
 			{
-				direction_change = true;
-				max_value = current_val;
-				n_max_value = n;
+				first_keypoint_number = n;
+				first_keypoint = false;
 			}
-		}
-		else
-		{
-			if (direction_change)
-			{
-				key_points.push_back(Point(size / 2 + dx[n_max_value], size / 2 + dy[n_max_value]));
-				direction_change = false;
-			}
-		}
 
-		if (current_val < -pegel)
-		{
-			if (current_val < min_value)
-			{
-				direction_change = true;
-				min_value = current_val;
-				n_min_value = n;
-			}
-		}
-		else
-		{
-			if (direction_change)
-			{
-				key_points.push_back(Point(size / 2 + dx[n_min_value], size / 2 + dy[n_min_value]));
-				direction_change = false;
-			}
 		}
 
-			
-	}
+		// Vorbereiten nachste zyclus
+		last_value = current_val;
+		last_direction = direction;
+		n++;
+
+	} while (first_keypoint_number != n && 
+		!(first_keypoint_number == 3000 && n == POINTS_IN_CIRCLE));
+
+	//key_points.rend();
+
+	// key_points.shrink_to_fit();
+		
 }
 
 void m_sensor::search_sectors(Pixel next_pixel, int pegel)
