@@ -22,6 +22,8 @@ m_sensor::m_sensor(Point p, uint sz)
 
 	sectors_nmb = 0;
 
+	key_points = vector<Point>(10);
+
 	float radius = SENSOR_RADIUS;
 
 	sensors_number++;
@@ -120,7 +122,8 @@ void m_sensor::search_keypoints(short* values, int pegel)
 	//HACK values sollen schon vorbereitet sein
 
 	// Glaetten
-	smooth_values(5);
+	smooth_values(3);
+	smooth_values(3);
 
 	key_points.clear();
 
@@ -173,9 +176,7 @@ void m_sensor::search_keypoints(short* values, int pegel)
 	} while (first_keypoint_number != n && 
 		!(first_keypoint_number == 3000 && n == POINTS_IN_CIRCLE));
 
-	//key_points.rend();
-
-	// key_points.shrink_to_fit();
+	 //key_points.shrink_to_fit();
 		
 }
 

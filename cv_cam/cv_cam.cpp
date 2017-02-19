@@ -123,7 +123,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 700);
+	s_set = sensor_set(frame0, 2000);
 
 	number_sensors = s_set.number_sensors;
 
