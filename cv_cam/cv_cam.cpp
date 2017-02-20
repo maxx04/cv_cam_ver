@@ -5,6 +5,7 @@
 #include "cv_cam.h"
 #include "m_sensor.h"
 #include "sensor_set.h"
+#include "key_point_gradient.h"
 
 using namespace cv;
 using namespace std;
@@ -14,7 +15,7 @@ int sensor_nr = 0;
 int pegel = 25;
 int number_sensors;
 
-//vector<Point> key_points_global(1000);
+vector<key_point_gradient> key_points_global(100);
 
 Mat frame0, frame1, fg0, fg1;
 
@@ -123,7 +124,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 2000);
+	s_set = sensor_set(frame0, 500);
 
 	number_sensors = s_set.number_sensors;
 

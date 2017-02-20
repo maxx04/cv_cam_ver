@@ -25,13 +25,7 @@ class m_sensor
 		//ushort distance;
 	};
 
-	const enum color_distance_enum {
-		RGB_DISTANCE = 0,
-		RGB_SQUARE,
-		RGB_3SUM,
-		RGB_SUM_EACH_COLOR,
-		RGB_MAX_EACH_COLOR
-	};
+
 
 	Point pos;	// position Mitte
 	uint size;	// groesse 
@@ -68,7 +62,7 @@ public:
 	Point get_position();
 	Size get_size();
 	inline short get_next_ring_value(ushort index, int8_t versatz);
-	short color_distance(Pixel Pixel0, Pixel Pixel1, int8_t function_nr);
+
 	void smooth_values( uint8_t range);
 	void show(const Mat * input, uint magnify);
 	void show(const Mat * input, const String fenster);

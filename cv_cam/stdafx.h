@@ -34,3 +34,4 @@ typedef cv::Point3_<uint8_t> Pixel;
 
 // TODO: reference additional headers your program requires here
 #include "plot.hpp"
+#include "core.h"
