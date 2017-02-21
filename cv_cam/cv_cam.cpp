@@ -86,17 +86,6 @@ static void onMouse_color(int event, int x, int y, int, void*)
 
 		cout << format("%02d - %02d", x, y) << " >> " << format("%3d:%3d:%3d", a.x,a.y,a.z) << endl;
 
-		//Mat tmp;
-		//frame1.copyTo(tmp);
-
-		//zeichne sensor und nachbarn
-		//s_set.draw_selected_sensor(&tmp);
-
-		//zeichne keypoints
-		//s_set.show_keypoints(&tmp);
-
-		//zeige fenster
-		//imshow("points", tmp);
 
 	}
 }
@@ -128,10 +117,11 @@ int main(int argc, const char * argv[])
 
 	number_sensors = s_set.number_sensors;
 
-	namedWindow("magnify", WINDOW_NORMAL || WINDOW_KEEPRATIO);
+	
 	namedWindow("points", WINDOW_NORMAL);
-
 	setMouseCallback("points", onMouse, 0);
+
+	namedWindow("magnify", WINDOW_NORMAL || WINDOW_KEEPRATIO);
 	setMouseCallback("magnify", onMouse_color, 0);
 
 	createTrackbar("sensor N", "magnify", &sensor_nr, number_sensors, redraw_all);
@@ -153,7 +143,11 @@ int main(int argc, const char * argv[])
 
 		cout << i << " - ElapsedTime: " << timeSec << " sec " << endl;
 
-		//s_set.add_keypoints(&key_points_global);
+		key_points_global.clear();
+
+		s_set.add_keypoints(&key_points_global);
+
+		cout << "Keypoints:" << key_points_global.size() << endl;
 
 		redraw_all(0, 0);
 

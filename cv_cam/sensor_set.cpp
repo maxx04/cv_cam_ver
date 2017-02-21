@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "key_point_gradient.h"
 #include "sensor_set.h"
+
 
 
 sensor_set::sensor_set(Mat frame0, int ns)
@@ -26,14 +28,13 @@ sensor_set::sensor_set(Mat frame0, int ns)
 	for (int m = 0; m < sensors_number; m++)
 	{
 		m_sensor* mi = &sensors[m];
-		Point mip = mi -> get_position();
 
 		cout << m << "\r";
 
 		for (int mn = 0; mn < sensors_number; mn++)
 		{
 
-			if (sensors[mn].cross(mip) && mn != m)
+			if (sensors[mn].cross(mi) && mn != m)
 			{
 				mi->nighbors.push_back(mn); // HACK Achtung bei vectoraenderung numerrierung wird geaendert
 
@@ -71,15 +72,17 @@ void sensor_set::draw_selected_sensor(Mat * output_image)
 
 	Rect Sensor_roi(m.get_position(), m.get_size());
 
-	// sensor selber zeichnen
-	rectangle(*output_image, Sensor_roi, Scalar(0, 0, 250));
-
+	/*
 	// Nachbarn zeichnen
 	for each (ushort sensor_number in m.nighbors)
 	{
 		Rect n_roi(sensors[sensor_number].get_position(), sensors[sensor_number].get_size());
 		cv::rectangle(*output_image, n_roi, Scalar(0, 250, 120));
 	}
+	*/
+
+	// sensor selber zeichnen
+	rectangle(*output_image, Sensor_roi, Scalar(0, 0, 250));
 
 }
 
@@ -97,10 +100,20 @@ void sensor_set::check_sensors(const Mat * frame, int pegel)
 		sensors[m].check(frame, pegel);
 }
 
-void sensor_set::add_keypoints(vector<Point>* key_points)
+void sensor_set::add_keypoints(vector<key_point_gradient>* key_points)
 {
+	vector<Point> temp(20);
 
-	for each  (m_sensor m in sensors)	m.add_points(key_points);
+	for each  (m_sensor m in sensors)
+	{
+		temp.clear();
+		m.add_points(&temp);
+
+		for each (Point p in temp)
+		{
+			key_points->push_back(key_point_gradient(p));
+		}
+	}
 }
 
 void sensor_set::show_keypoints(Mat* output_frame)

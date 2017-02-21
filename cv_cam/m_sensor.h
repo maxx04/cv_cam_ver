@@ -69,6 +69,7 @@ public:
 	void plot_graph(const String fenster);
 	void add_points(vector<Point> * global_points);
 	bool cross(Point left_upper_pos);
+	bool cross(m_sensor * m);
 	ushort get_distance_to_middle(int x, int y);
 	Pixel get_color(int x, int y, const Mat * input);
 	void add_segments();

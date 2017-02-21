@@ -39,6 +39,12 @@ key_point_gradient::key_point_gradient()
 }
 
 
+key_point_gradient::key_point_gradient(Point p)
+{
+	key_point_gradient();
+	position = p;
+}
+
 key_point_gradient::~key_point_gradient()
 {
 }

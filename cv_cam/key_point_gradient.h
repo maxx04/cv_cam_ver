@@ -11,10 +11,10 @@ using namespace std;
 class key_point_gradient
 {
 public:
+	key_point_gradient(Point p);
 	key_point_gradient();
 	~key_point_gradient();
 	void get_direction(Mat frame, Point pos);
-
 	void check(const Mat * input, int pegel);
 
 private:

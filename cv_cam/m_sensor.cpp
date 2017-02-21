@@ -506,6 +506,18 @@ bool m_sensor::cross(Point mp) //HACK Size beruecksichtigen, auf Rect aendern
 
 	return true;
 }
+bool m_sensor::cross(m_sensor* m) 
+{
+	int s = (int)size;
+	int sm = (int) m->size;
+
+	if (m-> pos.x + sm < pos.x) return false;
+	if (m-> pos.x > pos.x + s) return false;
+	if (m-> pos.y + sm < pos.y) return false;
+	if (m-> pos.y > pos.y + s) return false;
+
+	return true;
+}
 
 ushort m_sensor::get_distance_to_middle(int x, int y)
 {
