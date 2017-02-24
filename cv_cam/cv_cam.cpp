@@ -55,6 +55,10 @@ static void redraw_all(int /*arg*/, void*)
 
 	s_set.magnify_selected_sensor(&frame1, "magnify");
 
+	int n = key_points_global[0].active_keypoint;
+
+	key_points_global[n].show(&frame1, "keypoint");
+
 }
 
 static void pegel_check(int /*arg*/, void*)

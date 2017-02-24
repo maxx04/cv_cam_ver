@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 const enum color_distance_enum {
 	RGB_DISTANCE = 0,
 	RGB_SQUARE,
