@@ -5,21 +5,19 @@
 #include "cv_cam.h"
 #include "m_sensor.h"
 #include "sensor_set.h"
-#include "key_point_gradient.h"
+#include "key_points_set.h"
 
 using namespace cv;
 using namespace std;
-
 
 int sensor_nr = 0;
 int pegel = 25;
 int number_sensors;
 
-vector<key_point_gradient> key_points_global(100);
-
 Mat frame0, frame1, fg0, fg1;
 
 sensor_set s_set;
+key_points_set k_set;
 
 static void help()
 {
@@ -55,9 +53,9 @@ static void redraw_all(int /*arg*/, void*)
 
 	s_set.magnify_selected_sensor(&frame1, "magnify");
 
-	int n = key_points_global[0].active_keypoint;
+	//int n = key_points_global[0].active_keypoint;
 
-	key_points_global[n].show(&frame1, "keypoint");
+	//key_points_global[n].show(&frame1, "keypoint");
 
 }
 
@@ -120,7 +118,6 @@ int main(int argc, const char * argv[])
 	s_set = sensor_set(frame0, 500);
 
 	number_sensors = s_set.number_sensors;
-
 	
 	namedWindow("points", WINDOW_NORMAL);
 	setMouseCallback("points", onMouse, 0);
@@ -147,11 +144,9 @@ int main(int argc, const char * argv[])
 
 		cout << i << " - ElapsedTime: " << timeSec << " sec " << endl;
 
-		key_points_global.clear();
+		s_set.add_keypoints(&k_set);
 
-		s_set.add_keypoints(&key_points_global);
-
-		cout << "Keypoints:" << key_points_global.size() << endl;
+		//cout << "Keypoints:" << key_points_global.size() << endl;
 
 		redraw_all(0, 0);
 

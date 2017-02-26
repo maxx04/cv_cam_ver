@@ -1,8 +1,7 @@
 #include "stdafx.h"
-#include "key_point_gradient.h"
 #include "sensor_set.h"
 
-
+extern class key_points_set;
 
 sensor_set::sensor_set(Mat frame0, int ns)
 {
@@ -100,7 +99,7 @@ void sensor_set::check_sensors(const Mat * frame, int pegel)
 		sensors[m].check(frame, pegel);
 }
 
-void sensor_set::add_keypoints(vector<key_point_gradient>* key_points)
+void sensor_set::add_keypoints(key_points_set* key_points)
 {
 	vector<Point> temp(20);
 
@@ -111,7 +110,7 @@ void sensor_set::add_keypoints(vector<key_point_gradient>* key_points)
 
 		for each (Point p in temp)
 		{
-			key_points->push_back(key_point_gradient(p));
+			key_points-> add_point(key_point_gradient(p));
 		}
 	}
 }

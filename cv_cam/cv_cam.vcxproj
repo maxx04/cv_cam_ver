@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="core.h" />
     <ClInclude Include="cv_cam.h" />
+    <ClInclude Include="key_points_set.h" />
     <ClInclude Include="key_point_gradient.h" />
     <ClInclude Include="m_sensor.h" />
     <ClInclude Include="plot.hpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="core.cpp" />
     <ClCompile Include="cv_cam.cpp" />
+    <ClCompile Include="key_points_set.cpp" />
     <ClCompile Include="key_point_gradient.cpp" />
     <ClCompile Include="m_sensor.cpp" />
     <ClCompile Include="plot.cpp" />

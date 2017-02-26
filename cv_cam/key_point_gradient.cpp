@@ -9,21 +9,6 @@ int8_t key_point_gradient::dy[KP_POINTS_IN_CIRCLE];
 bool key_point_gradient::index_ready = false;
 short key_point_gradient::size = 0;
 Mat key_point_gradient::keypoint_mat;
-int key_point_gradient::active_keypoint;
-Mat* key_point_gradient::active_frame = NULL;
-
-Mat key_point_gradient::kp_roi;
-
- void key_point_gradient::redraw_keypoint_window(int /*arg*/, void*)
-{
-
-	//Rect roi(position.x - size / 2, position.y - size / 2, size, size);
-
-	//(*active_frame)(roi).copyTo(keypoint_mat);
-
-	imshow("keypoint", keypoint_mat);
-
-}
 
 
 key_point_gradient::key_point_gradient()
@@ -48,24 +33,9 @@ key_point_gradient::key_point_gradient()
 			da += KEYPOINT_ANGLE_STEP; //HACK Überlappungen möglich
 		}
 
-		namedWindow("keypoint", WINDOW_NORMAL || WINDOW_KEEPRATIO);
-		//setMouseCallback("keypoint", onMouse_color, 0);
-
-		createTrackbar("sensor N", "keypoint",
-			&active_keypoint, 100, redraw_all); //HACK 100
-		//createTrackbar("pegel", "keypoint", &pegel, 100, pegel_check);
-
-		//imshow("keypoint", keypoint_mat);
-
-
 		index_ready = true; //nur für erster keypoint ausfueren
 	}
 
-}
-
-void key_point_gradient::set_active_frame(Mat* frame)
-{
-	active_frame = frame;
 }
 
 
