@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "key_points_set.h"
+#include "key_point_gradient.h"
 #include "sensor_set.h"
 
 extern class key_points_set;
@@ -99,9 +101,13 @@ void sensor_set::check_sensors(const Mat * frame, int pegel)
 		sensors[m].check(frame, pegel);
 }
 
-void sensor_set::add_keypoints(key_points_set* key_points)
+void sensor_set::add_keypoints(key_points_set* key_points, Mat* frame)
 {
+	
 	vector<Point> temp(20);
+
+	key_points->keypoints_vector.clear();
+	key_points->activ_frame = frame; //HACK make privat
 
 	for each  (m_sensor m in sensors)
 	{

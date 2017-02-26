@@ -53,10 +53,6 @@ static void redraw_all(int /*arg*/, void*)
 
 	s_set.magnify_selected_sensor(&frame1, "magnify");
 
-	//int n = key_points_global[0].active_keypoint;
-
-	//key_points_global[n].show(&frame1, "keypoint");
-
 }
 
 static void pegel_check(int /*arg*/, void*)
@@ -144,9 +140,9 @@ int main(int argc, const char * argv[])
 
 		cout << i << " - ElapsedTime: " << timeSec << " sec " << endl;
 
-		s_set.add_keypoints(&k_set);
+		s_set.add_keypoints(&k_set, &frame1);
 
-		//cout << "Keypoints:" << key_points_global.size() << endl;
+		//cout << "Keypoints:" << k_set.keypoints_vector.size() << endl;
 
 		redraw_all(0, 0);
 

@@ -9,6 +9,7 @@ int8_t key_point_gradient::dy[KP_POINTS_IN_CIRCLE];
 bool key_point_gradient::index_ready = false;
 short key_point_gradient::size = 0;
 Mat key_point_gradient::keypoint_mat;
+Mat key_point_gradient::kp_roi;
 
 
 key_point_gradient::key_point_gradient()
