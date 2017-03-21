@@ -111,7 +111,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 500);
+	s_set = sensor_set(frame0, 800);
 
 	number_sensors = s_set.number_sensors;
 	
@@ -134,7 +134,12 @@ int main(int argc, const char * argv[])
 
 		const double start = (double)getTickCount();
 
+// --------------------------------------------------------------------------------
+//	finde keypoints
 		s_set.check_sensors(&fg1, pegel);
+//	verfine keypoints
+		//s_set.calculate_float_keypoints();
+// --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();
 

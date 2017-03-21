@@ -15,7 +15,7 @@ sensor_set::sensor_set(Mat frame0, int ns)
 	uniform_int_distribution<int> distribution_x(0, frame0.cols - sensor_size);
 	uniform_int_distribution<int> distribution_y(0, frame0.rows - sensor_size);
 
-	// sensoren erstellen
+	// sensoren erstellen und verteilen
 	for (size_t i = 0; i < number_sensors; i++)
 	{
 		Point sensor_position(distribution_x(generator), distribution_y(generator));
@@ -23,7 +23,6 @@ sensor_set::sensor_set(Mat frame0, int ns)
 	}
 
 	// nachbarn ermitteln
-
 	int sensors_number = (int)sensors.size();
 
 	for (int m = 0; m < sensors_number; m++)

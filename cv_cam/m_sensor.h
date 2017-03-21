@@ -72,7 +72,7 @@ public:
 	bool cross(m_sensor * m);
 	ushort get_distance_to_middle(int x, int y);
 	Pixel get_color(int x, int y, const Mat * input);
-	void add_segments();
+	void add_line_segments();
 	bool connect_sectors(Sector S1, Sector S2, list<Sector>* ls);
 	void create_sectors_array(const Mat* out, list<Sector>* output_list);
 	void create_sectors_array(const Mat * out_ready, Sector * sv);

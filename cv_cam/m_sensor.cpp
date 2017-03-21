@@ -108,9 +108,9 @@ void m_sensor::check(const Mat * input, int pegel)
 		Pixel0 = Pixel1;
 	}
 
-	//search_sectors(&out, pegel, RGB_3SUM); 
+	//search_sectors(&out, pegel, RGB_3SUM); //nicht produktiv
 
-	//add_segments(); // add line segments
+	add_line_segments(); // add line segments
 
 	search_keypoints(values, pegel);
 
@@ -404,14 +404,14 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 
 //line segments
-/*	
+	
 		Scalar c;
 		for each (segment sg in line_segments)
 		{
 			c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
 			line(out, sg.P1, sg.P2, c);
 		}
-		*/
+		
 // sectors
 		uint8_t half_sz = size / 2;
 		for (int k = sectors[i].start; k < sectors[i].end; k++)
@@ -533,19 +533,35 @@ Pixel m_sensor::get_color(int x, int y, const Mat * input)
 	return a;
 }
 
-void m_sensor::add_segments()
+void m_sensor::add_line_segments()
 {
+	//TODO in Arbeit
 	line_segments.clear();
 
 	uint8_t shift = size / 2;
 
-	for (int i = 0; i < sectors_nmb; i++)
+	for each (Point pnt in key_points)
 	{
-		Point p1 = Point(dx[sectors[i].start]+shift, dy[sectors[i].start]+shift);
-		Point p2 = Point(dx[sectors[i].end]+shift, dy[sectors[i].end]+shift);
-		Pixel c1 = sectors[i].color;
-		line_segments.push_back(segment(p1, p2, c1, c1)); //HACK noch zu ende bringen
+		//berechnen linie und anliegende farben
+		//segmentieren anliegende umgebung
+		//dann trennen farbe und blur (wechsel den farben) dann entschtehen 
+		//zwei liniensegmente mit grundfarbe und angrenzende farbe ueber blur
+		//auch alle moegliche variante entstehen da (ecken usw.)
+
+		//
+		Point p1 = pnt + Point(5, 5);
+		Point p2 = pnt + Point(-5, -5);
+
+		line_segments.push_back(segment(p1, p2, Pixel(100, 89, 40), Pixel(100, 89, 40))); 
 	}
+
+	//for (int i = 0; i < sectors_nmb; i++)
+	//{
+	//	Point p1 = Point(dx[sectors[i].start]+shift, dy[sectors[i].start]+shift);
+	//	Point p2 = Point(dx[sectors[i].end]+shift, dy[sectors[i].end]+shift);
+	//	Pixel c1 = sectors[i].color;
+	//	
+	//}
 }
 
 bool m_sensor::connect_sectors(Sector S1, Sector S2, list<Sector>* ls)
