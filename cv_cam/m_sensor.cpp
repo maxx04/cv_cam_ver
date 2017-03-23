@@ -90,18 +90,21 @@ void m_sensor::check(const Mat * input, int pegel)
 
 	Pixel* pixelPtr = (Pixel*)out.data; 
 
-	Pixel Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]);
+	Pixel Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
 	Pixel Pixel1;
 
 	//sectors_nmb = 0; //start fuer find sectors
 
 	//search_sectors(Pixel0, pegel);
 
+	color = Pixel(0, 0, 0);
+
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
 		Pixel1 = *(pixelPtr + index[i]);
 
 		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM);
+		color = middle_color(color,Pixel1);
 
 	//	search_sectors(Pixel1, pegel);
 
@@ -110,9 +113,9 @@ void m_sensor::check(const Mat * input, int pegel)
 
 	//search_sectors(&out, pegel, RGB_3SUM); //nicht produktiv
 
-	add_line_segments(); // add line segments
-
 	search_keypoints(values, pegel);
+
+	add_line_segments(); // add line segments
 
 }
 
@@ -313,7 +316,6 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_e
 	}
 }
 
-
 Point m_sensor::get_position()
 {
 	return pos;
@@ -388,11 +390,19 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	plot_graph("plot");
 
-
 	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
 	cout << " sectors: " << (uint)sectors_nmb << endl;
 	cout << " >  R   G   B  - start - end" << endl;
 
+	//line segments
+
+	Scalar c;
+	for each (segment sg in line_segments)
+	{
+		c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
+		line(out, sg.P1, sg.P2, c);
+	}
+	/*
 	for (int i = 0; i < sectors_nmb; i++)
 	{
 		cout << format(" > %3d %3d %3d - %2d - %2d"
@@ -403,14 +413,7 @@ void m_sensor::show(const Mat * input, const String fenster)
 			, sectors[i].end) << endl;
 
 
-//line segments
-	
-		Scalar c;
-		for each (segment sg in line_segments)
-		{
-			c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
-			line(out, sg.P1, sg.P2, c);
-		}
+
 		
 // sectors
 		uint8_t half_sz = size / 2;
@@ -425,6 +428,7 @@ void m_sensor::show(const Mat * input, const String fenster)
 		}
 
 	}
+	*/
 
 	//keypoint anzeigen
 	for each (Point p in key_points) out.at<Pixel>(p.y, p.x) = Pixel(255,255,0);
@@ -547,12 +551,15 @@ void m_sensor::add_line_segments()
 		//dann trennen farbe und blur (wechsel den farben) dann entschtehen 
 		//zwei liniensegmente mit grundfarbe und angrenzende farbe ueber blur
 		//auch alle moegliche variante entstehen da (ecken usw.)
-
+ 
 		//
-		Point p1 = pnt + Point(5, 5);
-		Point p2 = pnt + Point(-5, -5);
-
-		line_segments.push_back(segment(p1, p2, Pixel(100, 89, 40), Pixel(100, 89, 40))); 
+		if (key_points.size() == 2)
+		{
+			Point p1 = key_points[0];
+			Point p2 = key_points[1];
+			line_segments.push_back(segment(p1, p2, Pixel(100, 89, 40), Pixel(100, 89, 40)));
+		}
+		
 	}
 
 	//for (int i = 0; i < sectors_nmb; i++)

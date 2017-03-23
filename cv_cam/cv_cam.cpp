@@ -43,14 +43,19 @@ static void redraw_all(int /*arg*/, void*)
 	//zeichne sensor und nachbarn
 	s_set.draw_selected_sensor(&tmp);
 
+	//zeichne sensors ohne keypoints
+	s_set.show_flats(&tmp);
+
 	//zeichne keypoints
 	s_set.show_keypoints(&tmp);
 
+	//zeichne linien
 	s_set.show_line_segments(&tmp);
 
-	//zeige fenster
+	//zeige bild
 	imshow("points", tmp);
 
+	//zeichne ausgewaehlte sensor
 	s_set.magnify_selected_sensor(&frame1, "magnify");
 
 }
@@ -111,7 +116,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 800);
+	s_set = sensor_set(frame0, 4800);
 
 	number_sensors = s_set.number_sensors;
 	

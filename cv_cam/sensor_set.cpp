@@ -153,6 +153,24 @@ void sensor_set::show_line_segments(Mat* output_frame)
 	}
 }
 
+void sensor_set::show_flats(Mat* output_frame)
+{
+	//Pixel color = { 0,120,255 };
+	int sz = 7;
+
+	for each  (m_sensor m in sensors)
+	{
+		if (m.key_points.size() == 0)
+		{
+			Point p1 = m.get_position();
+
+			//rectangle((*output_frame), Rect(p1.x, p1.y, 12, 12), Scalar(m.color.x, m.color.y, m.color.z));
+			circle((*output_frame), p1, sz, Scalar(m.color.x, m.color.y, m.color.z),-1);
+		}
+
+	}
+}
+
 ushort sensor_set::find_sensor(int x, int y)
 {
 	ushort ret = 0;

@@ -30,7 +30,7 @@ class m_sensor
 	Point pos;	// position Mitte
 	uint size;	// groesse 
 	short values[POINTS_IN_CIRCLE];
-	//Pixel P1;
+
 	//Pixel P2;
 
 	static uint index[POINTS_IN_CIRCLE];
@@ -48,6 +48,7 @@ class m_sensor
 
 public:
 	list<ushort> nighbors; //HACK umbauen in private member
+	Pixel color;
 	vector<Point> key_points;
 	vector<segment> line_segments;
 

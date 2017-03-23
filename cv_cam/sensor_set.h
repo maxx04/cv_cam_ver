@@ -22,6 +22,7 @@ public:
 	void add_keypoints(key_points_set * key_points, Mat * frame);
 	void show_keypoints(Mat * output_frame);
 	void show_line_segments(Mat * output_frame);
+	void show_flats(Mat * output_frame);
 	ushort find_sensor(int x, int y);
 	Pixel get_color(int x, int y, const Mat * input);
 
