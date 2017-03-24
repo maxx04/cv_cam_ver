@@ -116,7 +116,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 4800);
+	s_set = sensor_set(frame0, 800);
 
 	number_sensors = s_set.number_sensors;
 	
@@ -129,13 +129,39 @@ int main(int argc, const char * argv[])
 	createTrackbar("sensor N", "magnify", &sensor_nr, number_sensors, redraw_all);
 	createTrackbar("pegel", "magnify", &pegel, 100, pegel_check);
 
+	//////////////////
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+	Mat tmp2 = Mat::zeros(frame0.rows, frame0.cols, CV_8UC1);
+	Mat tmp1;
 
 
 	for (int i = 0; cam.read(frame1); i++)
 	{
 
 		//cvtColor(frame1, fg1, COLOR_BGR2Lab);
-		frame1.copyTo(fg1);
+		GaussianBlur(frame1, fg1, Size(17, 17),5.6f);
+		threshold(fg1, tmp1, 5, 160, THRESH_BINARY_INV);
+
+		tmp1.convertTo(tmp2, CV_8U);
+		cvtColor(tmp2, tmp1, CV_BGR2GRAY);
+
+		findContours(tmp1, contours, hierarchy,
+			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1);
+
+		// iterate through all the top-level contours,
+		// draw each connected component with its own random color
+ 		int idx = 0;
+		for (; idx >= 0; idx = hierarchy[idx][0])
+		{
+			Scalar color(rand() & 255, rand() & 255, rand() & 255);
+			cout << contours[idx].size() << endl;
+			drawContours(frame1, contours, idx, color, 3, 8, hierarchy);
+		}
+
+		//fg1.copyTo(frame1);
+		//frame1.copyTo(fg1);
 
 		const double start = (double)getTickCount();
 
