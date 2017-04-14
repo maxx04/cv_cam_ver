@@ -141,8 +141,8 @@ int main(int argc, const char * argv[])
 	{
 
 		//cvtColor(frame1, fg1, COLOR_BGR2Lab);
-		GaussianBlur(frame1, fg1, Size(17, 17),5.6f);
-		threshold(fg1, tmp1, 5, 160, THRESH_BINARY_INV);
+		GaussianBlur(frame1, fg1, Size(9, 9),5.6f);
+		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV);
 
 		tmp1.convertTo(tmp2, CV_8U);
 		cvtColor(tmp2, tmp1, CV_BGR2GRAY);
@@ -150,18 +150,29 @@ int main(int argc, const char * argv[])
 		findContours(tmp1, contours, hierarchy,
 			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1);
 
+		fg1.copyTo(frame1);
+		//frame1.copyTo(fg1);
+
+		Moments M;
+		double A[7];
+		Mat f;
+
 		// iterate through all the top-level contours,
 		// draw each connected component with its own random color
  		int idx = 0;
 		for (; idx >= 0; idx = hierarchy[idx][0])
 		{
 			Scalar color(rand() & 255, rand() & 255, rand() & 255);
-			cout << contours[idx].size() << endl;
-			drawContours(frame1, contours, idx, color, 3, 8, hierarchy);
+			cout << idx << " - " << contours[idx].size() << endl;
+			M = moments(contours[idx]);
+			HuMoments(M, A);
+
+			cout << format("%f" ,A[0]) << endl;
+
+ 			drawContours(frame1, contours, idx, color, 3, 8, hierarchy);
 		}
 
-		//fg1.copyTo(frame1);
-		//frame1.copyTo(fg1);
+
 
 		const double start = (double)getTickCount();
 
