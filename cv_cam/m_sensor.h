@@ -1,6 +1,7 @@
 #pragma once
 #include "opencv2/opencv.hpp"
 #include "segment.h"
+#include "color_histogram.h"
 
 using namespace cv;
 using namespace std;
@@ -21,7 +22,7 @@ class m_sensor
 	{
 		uint8_t start;
 		uint8_t end;
-		Pixel color;
+		PixelColor color;
 		//ushort distance;
 	};
 
@@ -31,7 +32,7 @@ class m_sensor
 	uint size;	// groesse 
 	short values[POINTS_IN_CIRCLE];
 
-	//Pixel P2;
+	//PixelColor P2;
 
 	static uint index[POINTS_IN_CIRCLE];
 	static int8_t dx[POINTS_IN_CIRCLE]; // x in coordinaten kreispunkt vom sensor
@@ -44,21 +45,19 @@ class m_sensor
 	ushort sectors_nmb = 0;
 	Sector sectors[MAX_SECTORS]; //HACK optimieren
 
-	
+	color_histogram clr_hst; //TODO spaeter soll entfernt werden, zu viel speicher.
 
 public:
 	list<ushort> nighbors; //HACK umbauen in private member
-	Pixel color;
 	vector<Point> key_points;
 	vector<segment> line_segments;
 
-
 	m_sensor(Point p, uint sz);
 	~m_sensor();
-	Pixel middle_color(Pixel PA, Pixel PB);
+	PixelColor middle_color(PixelColor PA, PixelColor PB);
 	void check(const Mat* input, int pegel);
 	void search_keypoints(short * values, int pegel);
-	void search_sectors(Pixel next_pixel, int pegel);
+	void search_sectors(PixelColor next_pixel, int pegel);
 	void search_sectors(Mat * sensor_mat, int pegel, const color_distance_enum dist);
 	Point get_position();
 	Size get_size();
@@ -72,13 +71,13 @@ public:
 	bool cross(Point left_upper_pos);
 	bool cross(m_sensor * m);
 	ushort get_distance_to_middle(int x, int y);
-	Pixel get_color(int x, int y, const Mat * input);
+	PixelColor get_color(int x, int y, const Mat * input);
 	void add_line_segments();
 	bool connect_sectors(Sector S1, Sector S2, list<Sector>* ls);
 	void create_sectors_array(const Mat* out, list<Sector>* output_list);
 	void create_sectors_array(const Mat * out_ready, Sector * sv);
 	void connect_sectors(list<Sector>* input_list, list<Sector>* output_list, int pegel);
-	inline Pixel smooth_color(Pixel * p);
+	inline PixelColor smooth_color(PixelColor * p);
 	void m_sensor::mark_global(const Mat * input); //HACK check fuer bildgroesse 
 	void soi(const Mat* src, Mat* dst, uint magnify);
 

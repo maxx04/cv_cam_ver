@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "m_sensor.h"
 
 
@@ -27,7 +28,7 @@ m_sensor::m_sensor(Point p, uint sz)
 
 	sensors_number++;
 
-	int bytes = sizeof(Pixel);
+	int bytes = sizeof(PixelColor);
 
 	if (sensors_number < 2) //nur bei erstem sensor alles berechnen
 	{
@@ -67,9 +68,9 @@ m_sensor::~m_sensor()
 
 }
 
-Pixel m_sensor::middle_color(Pixel PA, Pixel PB)
+PixelColor m_sensor::middle_color(PixelColor PA, PixelColor PB)
 {
-	Pixel tmp;
+	PixelColor tmp;
 
 	//tmp = PA / 2 + PB / 2;
 
@@ -88,16 +89,16 @@ void m_sensor::check(const Mat * input, int pegel)
 
 	(*input)(roi).copyTo(out);
 
-	Pixel* pixelPtr = (Pixel*)out.data; 
+	PixelColor* pixelPtr = (PixelColor*)out.data; 
 
-	Pixel Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
-	Pixel Pixel1;
+	PixelColor Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
+	PixelColor Pixel1, color;
 
 	//sectors_nmb = 0; //start fuer find sectors
 
 	//search_sectors(Pixel0, pegel);
 
-	color = Pixel(0, 0, 0);
+	color = PixelColor(0, 0, 0);
 
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
@@ -182,7 +183,7 @@ void m_sensor::search_keypoints(short* values, int pegel)
 		
 }
 
-void m_sensor::search_sectors(Pixel next_pixel, int pegel)
+void m_sensor::search_sectors(PixelColor next_pixel, int pegel)
 {
 	//HACK bei auswertung vergleich end ring - startring beachten
 
@@ -209,7 +210,7 @@ void m_sensor::search_sectors(Pixel next_pixel, int pegel)
 		return;
 	}
 
-	Pixel p = sectors[sectors_nmb - 1].color;
+	PixelColor p = sectors[sectors_nmb - 1].color;
 
 	if (color_distance(p, next_pixel, RGB_SUM_EACH_COLOR) < pegel) 
 	{
@@ -419,19 +420,19 @@ void m_sensor::show(const Mat * input, const String fenster)
 		uint8_t half_sz = size / 2;
 		for (int k = sectors[i].start; k < sectors[i].end; k++)
 		{
-			out.at<Pixel>(dy[k] + half_sz, dx[k] + half_sz) = sectors[i].color;
+			out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = sectors[i].color;
 			//OPTI 
 			if( k == sectors[i].start)
-				out.at<Pixel>(dy[k] + half_sz, dx[k] + half_sz) = Pixel(255,0,0);
+				out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = PixelColor(255,0,0);
 			if (k == sectors[i].end - 1)
-				out.at<Pixel>(dy[k] + half_sz, dx[k] + half_sz) = Pixel(0,0,255);
+				out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = PixelColor(0,0,255);
 		}
 
 	}
 	*/
 
 	//keypoint anzeigen
-	for each (Point p in key_points) out.at<Pixel>(p.y, p.x) = Pixel(255,255,0);
+	for each (Point p in key_points) out.at<PixelColor>(p.y, p.x) = PixelColor(255,255,0);
 
 	//Ringfarbe anzeigen
 	//circle(out, Point(get_size() / 2), 8, Scalar(P1.x, P1.y, P1.z), -1);
@@ -528,9 +529,9 @@ ushort m_sensor::get_distance_to_middle(int x, int y)
 	return (ushort)sqrt((pos.x + size / 2 - x) ^ 2 + (pos.y + size / 2 - y) ^ 2);
 }
 
-Pixel m_sensor::get_color(int x, int y, const Mat * input)
+PixelColor m_sensor::get_color(int x, int y, const Mat * input)
 {
-	Pixel a = (*input).at<Pixel>(pos.y + y, pos.x + x);
+	PixelColor a = (*input).at<PixelColor>(pos.y + y, pos.x + x);
 
 	//circle((*input), Point(pos.x + x, pos.y + y), 6, Scalar(a.x, a.y, a.z), -1);
 
@@ -557,7 +558,7 @@ void m_sensor::add_line_segments()
 		{
 			Point p1 = key_points[0];
 			Point p2 = key_points[1];
-			line_segments.push_back(segment(p1, p2, Pixel(100, 89, 40), Pixel(100, 89, 40)));
+			line_segments.push_back(segment(p1, p2, PixelColor(100, 89, 40), PixelColor(100, 89, 40)));
 		}
 		
 	}
@@ -566,7 +567,7 @@ void m_sensor::add_line_segments()
 	//{
 	//	Point p1 = Point(dx[sectors[i].start]+shift, dy[sectors[i].start]+shift);
 	//	Point p2 = Point(dx[sectors[i].end]+shift, dy[sectors[i].end]+shift);
-	//	Pixel c1 = sectors[i].color;
+	//	PixelColor c1 = sectors[i].color;
 	//	
 	//}
 }
@@ -592,9 +593,9 @@ bool m_sensor::connect_sectors(Sector S1, Sector S2, list<Sector>* ls)
 void m_sensor::create_sectors_array(const Mat* out_ready, list<Sector>* output_list)
 {
 	//HACK out soll vorbereited sein
-	Pixel* pixelPtr = (Pixel*)(out_ready->data);
+	PixelColor* pixelPtr = (PixelColor*)(out_ready->data);
 	Sector s;
-	Pixel p;
+	PixelColor p;
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
 		p = *(pixelPtr + index[i]);
@@ -608,9 +609,9 @@ void m_sensor::create_sectors_array(const Mat* out_ready, list<Sector>* output_l
 void m_sensor::create_sectors_array(const Mat* out_ready, Sector* sv)
 {
 	//HACK out soll vorbereited sein
-	Pixel* pixelPtr = (Pixel*)(out_ready->data);
+	PixelColor* pixelPtr = (PixelColor*)(out_ready->data);
 
-	Pixel p;
+	PixelColor p;
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
 		p = smooth_color(pixelPtr + index[i]);
@@ -658,9 +659,9 @@ void m_sensor::connect_sectors(list<Sector>* input_list, list<Sector>* output_li
 
 }
 
-inline Pixel m_sensor::smooth_color(Pixel* p)
+inline PixelColor m_sensor::smooth_color(PixelColor* p)
 {
-	Pixel px = *(p);
+	PixelColor px = *(p);
 	for (uint16_t i = 0; i < 8; i++) //HACK 8 denn selber pixel ist schon berechnet
 	{
 		px = middle_color(px, *(p + smooth_index[i]));

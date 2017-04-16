@@ -7,7 +7,7 @@ segment::segment()
 {
 }
 
-segment::segment(Point p1, Point p2, Pixel c1, Pixel c2)
+segment::segment(Point p1, Point p2, PixelColor c1, PixelColor c2)
 {
 	P1 = p1;
 	P2 = p2;

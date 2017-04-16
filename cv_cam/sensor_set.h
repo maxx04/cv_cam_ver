@@ -24,7 +24,7 @@ public:
 	void show_line_segments(Mat * output_frame);
 	void show_flats(Mat * output_frame);
 	ushort find_sensor(int x, int y);
-	Pixel get_color(int x, int y, const Mat * input);
+	PixelColor get_color(int x, int y, const Mat * input);
 
 };
 

@@ -144,6 +144,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="color_histogram.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="cv_cam.h" />
     <ClInclude Include="key_points_set.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="color_histogram.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="cv_cam.cpp" />
     <ClCompile Include="key_points_set.cpp" />

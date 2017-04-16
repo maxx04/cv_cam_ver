@@ -11,7 +11,7 @@ core::~core()
 {
 }
 
-inline short ::color_distance(Pixel Pixel0, Pixel Pixel1, int8_t function_nr)
+inline short ::color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
 {
 	int m = 9;
 	switch (function_nr)

@@ -87,7 +87,7 @@ static void onMouse_color(int event, int x, int y, int, void*)
 	if (event == EVENT_LBUTTONDOWN)
 	{
 		//Draw color
-		Pixel a = s_set.get_color(x, y, &frame1);
+		PixelColor a = s_set.get_color(x, y, &frame1);
 
 		cout << format("%02d - %02d", x, y) << " >> " << format("%3d:%3d:%3d", a.x,a.y,a.z) << endl;
 

@@ -124,7 +124,7 @@ void sensor_set::add_keypoints(key_points_set* key_points, Mat* frame)
 
 void sensor_set::show_keypoints(Mat* output_frame)
 {
-	Pixel color = { 0,0,255 };
+	PixelColor color = { 0,0,255 };
 
 	for each  (m_sensor m in sensors)
 	{
@@ -133,8 +133,8 @@ void sensor_set::show_keypoints(Mat* output_frame)
 		for each(Point pnt in m.key_points)
 		{
 			  //cv::drawMarker(*output_frame, m.get_position() + pnt, Scalar(0, 0, 255), MARKER_CROSS,1);
-			  //(*output_frame).at<Pixel>(p1.y + pnt.y, p1.x + pnt.x) = color;
-			  (*output_frame).at<Pixel>(p1 + pnt) = color;
+			  //(*output_frame).at<PixelColor>(p1.y + pnt.y, p1.x + pnt.x) = color;
+			  (*output_frame).at<PixelColor>(p1 + pnt) = color;
 		}
 	}
 }
@@ -157,7 +157,7 @@ void sensor_set::show_line_segments(Mat* output_frame)
 
 void sensor_set::show_flats(Mat* output_frame)
 {
-	//Pixel color = { 0,120,255 };
+	//PixelColor color = { 0,120,255 };
 	Size sz = sensors[0].get_size()/2;
 
 	for each  (m_sensor m in sensors)
@@ -193,7 +193,7 @@ ushort sensor_set::find_sensor(int x, int y)
 	return ret;
 }
 
-Pixel sensor_set::get_color(int x, int y, const Mat * input)
+PixelColor sensor_set::get_color(int x, int y, const Mat * input)
 {
 	m_sensor m = sensors[selected_sensor];
 

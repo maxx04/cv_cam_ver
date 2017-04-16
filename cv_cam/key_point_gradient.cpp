@@ -74,10 +74,10 @@ void key_point_gradient::check(const Mat * input, int pegel)
 
 	(*input)(roi).copyTo(kp_roi);
 
-	Pixel* pixelPtr = (Pixel*)kp_roi.data;
+	PixelColor* pixelPtr = (PixelColor*)kp_roi.data;
 
-	Pixel Pixel0 = *(pixelPtr + index[KP_POINTS_IN_CIRCLE - 1]);
-	Pixel Pixel1;
+	PixelColor Pixel0 = *(pixelPtr + index[KP_POINTS_IN_CIRCLE - 1]);
+	PixelColor Pixel1;
 
 	short values[KP_POINTS_IN_CIRCLE];
 

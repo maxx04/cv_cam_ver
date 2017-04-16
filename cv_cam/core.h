@@ -1,6 +1,6 @@
 #pragma once
 
-
+typedef cv::Point3_<uint8_t> PixelColor;
 
 const enum color_distance_enum {
 	RGB_DISTANCE = 0,
@@ -10,7 +10,7 @@ const enum color_distance_enum {
 	RGB_MAX_EACH_COLOR
 };
 
-short color_distance(Pixel Pixel0, Pixel Pixel1, int8_t function_nr);
+short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr);
 
 class core
 {
