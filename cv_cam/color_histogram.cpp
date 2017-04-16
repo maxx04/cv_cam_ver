@@ -18,7 +18,25 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	// dann geteilt auf anzahl vorhandenen segmenten
 	// oder alles ablegen mit kleinstem abstand dann rausnehmen wichtigste die kommen raus
 	// parallelism
+	if (histogram.size() == 0)
+	{
+		histogram.push_back({ clr,1 });
+		return;
+	}
 	// gehen durch alle positionen vom histogramm
-	// ablegen in naechst naehres
-
+	int i = 0;
+	for each (hst h in histogram) //TODO leistung schwach
+	{
+		short d = color_distance(clr, h.color, RGB_DISTANCE);
+		// ablegen in naechst naehres
+		if(d <= distance)
+		{
+			histogram[i].treffer++;
+			histogram[i].color = middle_color(h.color, clr);
+			return;
+		}
+		i++;
+	}
+	//wenn kein hat gepasst
+	histogram.push_back({ clr,1 });
 }

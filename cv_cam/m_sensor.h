@@ -54,7 +54,7 @@ public:
 
 	m_sensor(Point p, uint sz);
 	~m_sensor();
-	PixelColor middle_color(PixelColor PA, PixelColor PB);
+
 	void check(const Mat* input, int pegel);
 	void search_keypoints(short * values, int pegel);
 	void search_sectors(PixelColor next_pixel, int pegel);

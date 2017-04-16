@@ -54,7 +54,7 @@ m_sensor::m_sensor(Point p, uint sz)
 		smooth_index[3] = size - 1;
 		smooth_index[4] = - 1;
 		smooth_index[5] = -1 - size;
-		smooth_index[6] = -size;
+		smooth_index[6] = -size; //sehe warnungen am compiler
 		smooth_index[7] = -size + 1;
 		smooth_index[8] = 0;
 
@@ -68,18 +68,7 @@ m_sensor::~m_sensor()
 
 }
 
-PixelColor m_sensor::middle_color(PixelColor PA, PixelColor PB)
-{
-	PixelColor tmp;
 
-	//tmp = PA / 2 + PB / 2;
-
-	tmp.x = (PA.x + PB.x) / 2;
-	tmp.y = (PA.y + PB.y) / 2;
-	tmp.z = (PA.z + PB.z) / 2;
-
-	return tmp;
-}
 
 void m_sensor::check(const Mat * input, int pegel)
 {
@@ -127,7 +116,7 @@ void m_sensor::search_keypoints(short* values, int pegel)
 {
 	//HACK values sollen schon vorbereitet sein
 
-	// Glaetten
+	// Glaetten 2 mal!
 	smooth_values(3);
 	smooth_values(3);
 
@@ -271,7 +260,7 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_e
 			s1 = sv[i_put];
 			s2 = sv[i_get];
 
-			if (abs(color_distance(s1.color, s2.color, dist)) < pegel)
+			if (abs( color_distance(s1.color, s2.color, dist)) < pegel)
 			{
 				sv[i_put].start = s1.start;
 				sv[i_put].end = s2.end;

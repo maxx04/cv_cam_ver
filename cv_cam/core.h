@@ -11,6 +11,7 @@ const enum color_distance_enum {
 };
 
 short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr);
+PixelColor middle_color(PixelColor PA, PixelColor PB);
 
 class core
 {
