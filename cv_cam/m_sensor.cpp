@@ -104,6 +104,9 @@ void m_sensor::check(const Mat * input, int pegel)
 	{
 		Pixel1 = *(pixelPtr + index[i]);
 
+		//aufbauen histogramm
+		clr_hst.add(Pixel1, 1);
+
 		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM);
 		color = middle_color(color,Pixel1);
 
