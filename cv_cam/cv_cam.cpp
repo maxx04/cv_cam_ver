@@ -17,7 +17,7 @@ int number_sensors;
 Mat frame0, frame1, fg0, fg1;
 
 sensor_set s_set;
-key_points_set k_set;
+key_points_set k_set; // global
 
 static void help()
 {
@@ -58,11 +58,13 @@ static void redraw_all(int /*arg*/, void*)
 	//zeichne ausgewaehlte sensor
 	s_set.magnify_selected_sensor(&frame1, "magnify");
 
+
 }
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set.check_sensors(&frame1, pegel);
+	s_set.check_sensors(&frame1, pegel); // berechne sensoren neu
+	s_set.add_keypoints(&k_set, &frame1); // ausleite sensoren neu
 	redraw_all(0, 0);
 }
 
@@ -116,7 +118,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 800);
+	s_set = sensor_set(frame0, 1800);
 
 	number_sensors = s_set.number_sensors;
 	
@@ -131,7 +133,7 @@ int main(int argc, const char * argv[])
 
 	//////////////////
 
-	vector<vector<Point> > contours;
+	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	Mat tmp2 = Mat::zeros(frame0.rows, frame0.cols, CV_8UC1);
 	Mat tmp1;
@@ -140,15 +142,16 @@ int main(int argc, const char * argv[])
 	for (int i = 0; cam.read(frame1); i++)
 	{
 
-		//cvtColor(frame1, fg1, COLOR_BGR2Lab);
-		GaussianBlur(frame1, fg1, Size(9, 9),5.6f);
-		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV);
+		cvtColor(frame1, fg1, COLOR_BGR2Lab);
+		//GaussianBlur(frame1, fg1, Size(9, 9),5.6f); // smooth
+/*
+		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV); // neues bild mit grenze
 
-		tmp1.convertTo(tmp2, CV_8U);
-		cvtColor(tmp2, tmp1, CV_BGR2GRAY);
+		tmp1.convertTo(tmp2, CV_8U); // konvertieren in  8 bit format
+		cvtColor(tmp2, tmp1, CV_BGR2GRAY); // konvertieren in grauform
 
 		findContours(tmp1, contours, hierarchy,
-			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1);
+			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1); //fnde konturen
 
 		fg1.copyTo(frame1);
 		//frame1.copyTo(fg1);
@@ -172,7 +175,7 @@ int main(int argc, const char * argv[])
  			drawContours(frame1, contours, idx, color, 3, 8, hierarchy);
 		}
 
-
+*/
 
 		const double start = (double)getTickCount();
 

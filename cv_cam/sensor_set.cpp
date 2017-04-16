@@ -118,6 +118,8 @@ void sensor_set::add_keypoints(key_points_set* key_points, Mat* frame)
 			key_points-> add_point(key_point_gradient(p));
 		}
 	}
+
+
 }
 
 void sensor_set::show_keypoints(Mat* output_frame)

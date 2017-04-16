@@ -9,23 +9,19 @@ vector<key_point_gradient> key_points_set::keypoints_vector;
 
 key_points_set::key_points_set()
 {
-	keypoints_number = keypoints_vector.size();
+	keypoints_number = 1; // keypoints_vector.size();
 	namedWindow("keypoint", WINDOW_NORMAL || WINDOW_KEEPRATIO);
 	//setMouseCallback("keypoint", onMouse_color, 0);
 
 	createTrackbar("Keypoint N", "keypoint",
-		&active_keypoint, 100, redraw_keypoint_window); //HACK 100
-														
-	//createTrackbar("pegel", "keypoint", &pegel, 100, pegel_check);
-
-	//imshow("keypoint", keypoint_mat);
+		&active_keypoint, keypoints_number, redraw_keypoint_window); //HACK 100														
 }
 
 void key_points_set::redraw_keypoint_window(int /*arg*/, void*)
 {
-	keypoints_number = keypoints_vector.size()-1;
+	keypoints_number = keypoints_vector.size();
 
-cv:setTrackbarMax("Keypoint N", "keypoint", keypoints_number);
+	cv:setTrackbarMax("Keypoint N", "keypoint", keypoints_number - 1);
 
 	key_point_gradient m = keypoints_vector[active_keypoint];
 
