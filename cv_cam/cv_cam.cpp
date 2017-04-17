@@ -142,8 +142,9 @@ int main(int argc, const char * argv[])
 	for (int i = 0; cam.read(frame1); i++)
 	{
 
-		cvtColor(frame1, fg1, COLOR_BGR2Lab);
-		//GaussianBlur(frame1, fg1, Size(9, 9),5.6f); // smooth
+		//cvtColor(frame1, fg1, COLOR_BGR2Lab);
+		//GaussianBlur(frame1, fg1, Size(3, 3),3.6f); // smooth
+		frame1.copyTo(fg1);
 /*
 		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV); // neues bild mit grenze
 
@@ -154,7 +155,7 @@ int main(int argc, const char * argv[])
 			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1); //fnde konturen
 
 		fg1.copyTo(frame1);
-		//frame1.copyTo(fg1);
+
 
 		Moments M;
 		double A[7];

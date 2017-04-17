@@ -89,12 +89,15 @@ void m_sensor::check(const Mat * input, int pegel)
 
 	color = PixelColor(0, 0, 0);
 
+	// reset histogramm
+	clr_hst.reset();
+
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
 		Pixel1 = *(pixelPtr + index[i]);
 
 		//aufbauen histogramm
-		clr_hst.add(Pixel1, 1);
+		clr_hst.add(Pixel1, 9);
 
 		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM);
 		color = middle_color(color,Pixel1);
@@ -377,11 +380,15 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	//CV_Assert((*input).type() == out.type());
 
+	Mat k;
+
 	Rect roi(pos.x, pos.y, size, size);
 
 	(*input)(roi).copyTo(out);
 
 	plot_graph("plot");
+
+	clr_hst.draw(pos, k); //TODO k ist nicht notwendig
 
 	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
 	cout << " sectors: " << (uint)sectors_nmb << endl;
