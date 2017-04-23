@@ -5,11 +5,19 @@
 
 color_histogram::color_histogram()
 {
+
 }
 
 
 color_histogram::~color_histogram()
 {
+
+}
+
+
+ushort color_histogram::compare(color_histogram* h)
+{
+	return 1;
 }
 
 
@@ -35,7 +43,7 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	int i = 0;
 	for each (hst h in histogram) //TODO leistung schwach
 	{
-		short d = color_distance(clr, h.color, RGB_DISTANCE);
+		short d = color_distance(clr, h.color, HSV_HV);
 		// ablegen in naechst naehres
 		if(d <= distance)
 		{
@@ -49,15 +57,16 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	histogram.push_back({ clr,1 });
 }
 
-void color_histogram::draw(Point start, OutputArray windowName)
+void color_histogram::draw(Point start)
 {
-	Mat plotResult;
+	Mat plotResult; 
 	const int width = 200;
 	const int high = 120;
-	windowName.create(high, width, CV_8UC3);
-	plotResult = windowName.getMat();
-	plotResult.setTo(Scalar(0));
+	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
+	
+	plotResult.setTo(Scalar(0, 0, 127));
 	int sz = histogram.size();
+
 	if (sz == 0)
 	{
 		//TODO Assert hinzufügen
@@ -80,8 +89,9 @@ void color_histogram::draw(Point start, OutputArray windowName)
 		hst h = histogram[i];
 		int hi = (int)((float)(h.treffer)/mag); //TODO mag == 0
 		cv::rectangle(plotResult, Rect(i*step, 0, step, hi) , Scalar(h.color.x, h.color.y, h.color.z), -1);
+		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 
-
+	cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
 	imshow("hist", plotResult);
 }

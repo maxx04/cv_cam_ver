@@ -141,10 +141,11 @@ int main(int argc, const char * argv[])
 
 	for (int i = 0; cam.read(frame1); i++)
 	{
+		//HACK Achtung! Arbeiten in HSV Raum!
+		cvtColor(frame1, fg1, COLOR_BGR2HSV);
 
-		//cvtColor(frame1, fg1, COLOR_BGR2Lab);
 		//GaussianBlur(frame1, fg1, Size(3, 3),3.6f); // smooth
-		frame1.copyTo(fg1);
+		//frame1.copyTo(fg1);
 /*
 		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV); // neues bild mit grenze
 
@@ -183,8 +184,6 @@ int main(int argc, const char * argv[])
 // --------------------------------------------------------------------------------
 //	finde keypoints
 		s_set.check_sensors(&fg1, pegel);
-//	verfine keypoints
-		//s_set.calculate_float_keypoints();
 // --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();

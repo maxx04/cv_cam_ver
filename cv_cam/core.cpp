@@ -27,8 +27,11 @@ short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
 		return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);
 
 	case RGB_MAX_EACH_COLOR:
-		m = max(abs(Pixel0.y - Pixel1.y), abs(Pixel0.z - Pixel1.z));
+		m = max(abs(Pixel0.x - Pixel1.x), abs(Pixel0.z - Pixel1.z));
 		return max(abs(Pixel0.x - Pixel1.x), m);
+
+	case HSV_HV:
+		return (Pixel0.x - Pixel1.x) + (Pixel0.z - Pixel1.z);
 
 	default:
 		return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);

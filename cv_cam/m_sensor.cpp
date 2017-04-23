@@ -97,10 +97,10 @@ void m_sensor::check(const Mat * input, int pegel)
 		Pixel1 = *(pixelPtr + index[i]);
 
 		//aufbauen histogramm
-		clr_hst.add(Pixel1, 9);
+		clr_hst.add(Pixel1, 1);
 
-		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM);
-		color = middle_color(color,Pixel1);
+		values[i] = color_distance(Pixel0, Pixel1, HSV_HV); //HACK Berechnungsmethode beachten!
+		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
 	//	search_sectors(Pixel1, pegel);
 
@@ -111,7 +111,7 @@ void m_sensor::check(const Mat * input, int pegel)
 
 	search_keypoints(values, pegel);
 
-	add_line_segments(); // add line segments
+	// add_line_segments(); // add line segments
 
 }
 
@@ -380,15 +380,13 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	//CV_Assert((*input).type() == out.type());
 
-	Mat k;
-
 	Rect roi(pos.x, pos.y, size, size);
 
 	(*input)(roi).copyTo(out);
 
 	plot_graph("plot");
 
-	clr_hst.draw(pos, k); //TODO k ist nicht notwendig
+	clr_hst.draw(pos); 
 
 	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
 	cout << " sectors: " << (uint)sectors_nmb << endl;

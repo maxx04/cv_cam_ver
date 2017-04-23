@@ -7,7 +7,8 @@ const enum color_distance_enum {
 	RGB_SQUARE,
 	RGB_3SUM,
 	RGB_SUM_EACH_COLOR,
-	RGB_MAX_EACH_COLOR
+	RGB_MAX_EACH_COLOR,
+	HSV_HV
 };
 
 short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr);
