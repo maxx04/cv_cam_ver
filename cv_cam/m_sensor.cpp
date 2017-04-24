@@ -386,9 +386,9 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	plot_graph("plot");
 
-	//clr_hst.draw(pos);
+	clr_hst.draw(pos);
 
-	clr_hst.draw_base();
+	//clr_hst.draw_base();
 
 	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
 	cout << " sectors: " << (uint)sectors_nmb << endl;

@@ -114,7 +114,7 @@ void color_histogram::draw(Point start)
 		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 
-	cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
+	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
 	imshow("hist", plotResult);
 }
 
