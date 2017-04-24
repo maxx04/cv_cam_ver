@@ -99,7 +99,7 @@ void m_sensor::check(const Mat * input, int pegel)
 		//aufbauen histogramm
 		clr_hst.add(Pixel1, 2);
 
-		values[i] = color_distance(Pixel0, Pixel1, HSV_HV); //HACK Berechnungsmethode beachten!
+		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM); //HACK Berechnungsmethode beachten!
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
 	//	search_sectors(Pixel1, pegel);
@@ -439,7 +439,7 @@ void m_sensor::show(const Mat * input, const String fenster)
 	//Ringfarbe anzeigen
 	//circle(out, Point(get_size() / 2), 4, Scalar(P2.x, P2.y, P2.z), -1);
 
-	cvtColor(out, out, COLOR_HSV2BGR);
+	//cvtColor(out, out, COLOR_HSV2BGR);
 	imshow(fenster, out);
 
 }

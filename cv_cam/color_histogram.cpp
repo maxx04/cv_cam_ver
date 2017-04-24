@@ -9,12 +9,12 @@ color_histogram::color_histogram()
 	if (!base_defined)
 	{
 		hst m;
-		ushort v = 100;
-		ushort s = 255;
-
-		for (ushort h = 0; h < 179; h += 179 / 16)
-			//for (s = 0; s <= 256; s += 256/8)
-				 for (v = 0; v <= 256; v += 256 / 10)
+		ushort v = 0;
+		ushort s = 0;
+		ushort schritt = 256 / 8;
+		for (ushort h = 0; h < 256; h += schritt)
+			for (s = 0; s < 256; s += schritt)
+				 for (v = 0; v < 256; v += schritt)
 
 		{
 
@@ -65,7 +65,7 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	int i = 0;
 	for each (hst h in histogram) //TODO leistung schwach
 	{
-		short d = color_distance(clr, h.color, HSV_HV);
+		short d = color_distance(clr, h.color, RGB_3SUM);
 		// ablegen in naechst naehres
 		if(d <= distance)
 		{

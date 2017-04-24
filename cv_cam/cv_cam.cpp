@@ -35,7 +35,7 @@ static void redraw_all(int /*arg*/, void*)
 
 	Mat tmp;
 	frame1.copyTo(tmp);
-	cvtColor(tmp, tmp, COLOR_HSV2BGR);
+	//cvtColor(tmp, tmp, COLOR_HSV2BGR);
 
 	s_set.select_sensor(sensor_nr);
 
@@ -143,7 +143,7 @@ int main(int argc, const char * argv[])
 	for (int i = 0; cam.read(frame1); i++)
 	{
 		//HACK Achtung! Arbeiten in HSV Raum!
-		cvtColor(frame1, frame1, COLOR_BGR2HSV);
+		//cvtColor(frame1, frame1, COLOR_BGR2HSV);
 
 		//GaussianBlur(frame1, fg1, Size(3, 3),3.6f); // smooth
 		//frame1.copyTo(fg1);
