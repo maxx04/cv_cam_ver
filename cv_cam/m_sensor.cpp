@@ -97,7 +97,7 @@ void m_sensor::check(const Mat * input, int pegel)
 		Pixel1 = *(pixelPtr + index[i]);
 
 		//aufbauen histogramm
-		clr_hst.add(Pixel1, 1);
+		clr_hst.add(Pixel1, 2);
 
 		values[i] = color_distance(Pixel0, Pixel1, HSV_HV); //HACK Berechnungsmethode beachten!
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
@@ -235,7 +235,7 @@ void m_sensor::search_sectors(PixelColor next_pixel, int pegel)
 	}
 
 }
-/******/
+
 void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_enum dist)
 {
 	static Sector sv[POINTS_IN_CIRCLE];
@@ -386,7 +386,9 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	plot_graph("plot");
 
-	clr_hst.draw(pos); 
+	//clr_hst.draw(pos);
+
+	clr_hst.draw_base();
 
 	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
 	cout << " sectors: " << (uint)sectors_nmb << endl;
@@ -437,7 +439,7 @@ void m_sensor::show(const Mat * input, const String fenster)
 	//Ringfarbe anzeigen
 	//circle(out, Point(get_size() / 2), 4, Scalar(P2.x, P2.y, P2.z), -1);
 
-
+	cvtColor(out, out, COLOR_HSV2BGR);
 	imshow(fenster, out);
 
 }
