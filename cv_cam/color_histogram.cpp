@@ -11,7 +11,7 @@ color_histogram::color_histogram()
 		hst m;
 		ushort v = 0;
 		ushort s = 0;
-		ushort schritt = 256 / 8;
+		ushort schritt = 256 / 4;
 		for (ushort h = 0; h < 256; h += schritt)
 			for (s = 0; s < 256; s += schritt)
 				 for (v = 0; v < 256; v += schritt)
@@ -45,7 +45,11 @@ ushort color_histogram::compare(color_histogram* h)
 
 void color_histogram::reset()
 {
-	histogram.clear();
+	for (uint8_t i = 0; i < COLOR_HISTOGRAMM_BREITE; i++)
+	{
+		histogram[i] = 0;
+	}
+	//histogram.clear();
 }
 
 void color_histogram::add(PixelColor clr, ushort distance)
@@ -56,27 +60,34 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	// oder alles ablegen mit kleinstem abstand dann rausnehmen wichtigste die kommen raus
 	// parallelism
 
-	if (histogram.size() == 0)
-	{
-		histogram.push_back({ clr,1 });
-		return;
-	}
+	//if (histogram.size() == 0)
+	//{
+	//	histogram.push_back({ clr,1 });
+	//	return;
+	//}
 	// gehen durch alle positionen vom histogramm
-	int i = 0;
-	for each (hst h in histogram) //TODO leistung schwach
+	//und finde minimale abstand
+
+	short d = 1000;
+	short dst;
+
+	int treff = 0;
+	for (uint8_t i = 0; i < COLOR_HISTOGRAMM_BREITE; i++) //TODO leistung schwach
 	{
-		short d = color_distance(clr, h.color, RGB_3SUM);
 		// ablegen in naechst naehres
-		if(d <= distance)
+		dst = abs(color_distance(clr, base[i].color, RGB_3SUM));
+
+		if(d > dst)
 		{
-			histogram[i].treffer++;
-			histogram[i].color = middle_color(h.color, clr);
-			return;
+			treff = i;
+			d = dst;
+			//histogram[i].treffer++;
+			//histogram[i].color = middle_color(h.color, clr);
 		}
-		i++;
+
 	}
-	//wenn kein hat gepasst
-	histogram.push_back({ clr,1 });
+
+	histogram[treff]++; //erhoehe treffer
 }
 
 void color_histogram::draw(Point start)
@@ -86,8 +97,8 @@ void color_histogram::draw(Point start)
 	const int high = 120;
 	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
 	
-	plotResult.setTo(Scalar(0, 0, 127));
-	int sz = histogram.size();
+	plotResult.setTo(Scalar(127, 127, 127));
+	int sz = COLOR_HISTOGRAMM_BREITE;
 
 	if (sz == 0)
 	{
@@ -100,17 +111,16 @@ void color_histogram::draw(Point start)
 
 	for (int i = 0; i < sz; i++)
 	{
-		hst h = histogram[i];
-		max = MAX(h.treffer, max);
+		max = MAX(histogram[i], max);
 	}
 
 	int step = width / sz;
 	float mag = (float)max / (float)high;
 	for (int i = 0; i < sz; i++)
 	{
-		hst h = histogram[i];
-		int hi = (int)((float)(h.treffer)/mag); //TODO mag == 0
-		cv::rectangle(plotResult, Rect(i*step, 0, step, hi) , Scalar(h.color.x, h.color.y, h.color.z), -1);
+		//hst h = histogram[i];
+		int hi = (int)((float)(histogram[i])/mag); //TODO mag == 0
+		cv::rectangle(plotResult, Rect(i*step, 0, step, hi) , Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
 		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 

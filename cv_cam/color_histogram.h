@@ -25,7 +25,8 @@ protected:
 	//ushort treffer[COLOR_HISTOGRAMM_BREITE];
 	//ushort breite;
 
-	vector <hst> histogram;
+	//vector <hst> histogram;
+	uint8_t histogram[COLOR_HISTOGRAMM_BREITE];
 
 };
 

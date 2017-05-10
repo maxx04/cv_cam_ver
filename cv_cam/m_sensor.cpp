@@ -97,7 +97,7 @@ void m_sensor::check(const Mat * input, int pegel)
 		Pixel1 = *(pixelPtr + index[i]);
 
 		//aufbauen histogramm
-		clr_hst.add(Pixel1, 2);
+		clr_hst.add(Pixel1, 20);
 
 		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM); //HACK Berechnungsmethode beachten!
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
