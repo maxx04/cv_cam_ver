@@ -101,7 +101,7 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //TODO leistung schwach
 	{
 		// ablegen in naechst naehres
-		dst = abs(color_distance(clr, base[i].color, RGB_SQUARE));
+		dst = abs(color_distance(clr, base[i].color, RGB_SUM_EACH_COLOR));
 
 		if(dst < d)
 		{
@@ -119,7 +119,8 @@ void color_histogram::draw(Point start)
 	Mat plotResult; 
 	const int width = 600;
 	const int high = 120;
-	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
+	const int base_high = 20; //base Histogramm
+	plotResult.create(high+ base_high, width, CV_8UC3); //TODO Leisungsverlust.
 	
 	plotResult.setTo(Scalar(127, 127, 127));
 	int sz = COLOR_HISTOGRAM_BREITE;
@@ -144,7 +145,8 @@ void color_histogram::draw(Point start)
 	{
 		//hst h = histogram[i];
 		int hi = (int)((float)(histogram[i])/mag); //TODO mag == 0
-		cv::rectangle(plotResult, Rect(i*step, 0, step, hi) , Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
+		cv::rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
+		cv::rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
 		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 

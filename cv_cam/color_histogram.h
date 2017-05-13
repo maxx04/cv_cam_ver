@@ -4,7 +4,7 @@ struct hst { PixelColor color; ushort treffer; };
 class color_histogram
 {
 
-#define COLOR_HISTOGRAM_BREITE (36+16+1)
+#define COLOR_HISTOGRAM_BREITE (36+16)
 
 public:
 	color_histogram();
