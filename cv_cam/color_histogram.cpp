@@ -13,14 +13,15 @@ color_histogram::color_histogram()
 		int i = 0;
 		double h = 0.0;
 		double s = 0.5;
-		double v = 0.5;
-		double schritt = 10.0;
+		double v = 0.7;
+		double schritt = 360.0/double(COLOR_HISTOGRAM_COLORS);
 
-		HSV hsv(0.0,0.0,0.0);
+		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(0.0, 0.0, 0.0);
 
 		for (h = 0; h < 360; h += schritt)
-
+			for (s = 0.25; s <= 0.75; s += 0.25)
+				for (v = 0.45; v <= 0.75; v += 0.15)
 
 		{
 
@@ -39,7 +40,7 @@ color_histogram::color_histogram()
 
 
 		//Grauwerte
-		for (ushort b = 0; b < 256; b += 16)
+		for (ushort b = 0; b < 256; b += 256/COLOR_HISTOGRAM_GRAYS)
 				{
 
 					m.treffer = 1;
@@ -86,11 +87,6 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	// oder alles ablegen mit kleinstem abstand dann rausnehmen wichtigste die kommen raus
 	// parallelism
 
-	//if (histogram.size() == 0)
-	//{
-	//	histogram.push_back({ clr,1 });
-	//	return;
-	//}
 	// gehen durch alle positionen vom histogramm
 	//und finde minimale abstand
 
@@ -117,7 +113,7 @@ void color_histogram::add(PixelColor clr, ushort distance)
 void color_histogram::draw(Point start)
 {
 	Mat plotResult; 
-	const int width = 600;
+	const int width = 1600;
 	const int high = 120;
 	const int base_high = 20; //base Histogramm
 	plotResult.create(high+ base_high, width, CV_8UC3); //TODO Leisungsverlust.
@@ -154,23 +150,3 @@ void color_histogram::draw(Point start)
 	imshow("hist", plotResult);
 }
 
-void color_histogram::draw_base()
-{
-	Mat plotResult;
-	const int width = 1500;
-	const int high = 120;
-	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
-
-	plotResult.setTo(Scalar(0, 0, 0));
-	int sz = COLOR_HISTOGRAM_BREITE;
-
-	int step = width / sz;
-
-	for (int i = 0; i < sz; i++)
-	{
-		cv::rectangle(plotResult, Rect(i*step, 0, step, high), Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
-	}
-
-	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
-	imshow("hist", plotResult);
-}
