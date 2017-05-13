@@ -1,30 +1,56 @@
 #include "stdafx.h"
 #include "color_histogram.h"
 
-vector <hst> color_histogram::base;
+hst color_histogram::base[COLOR_HISTOGRAM_BREITE];
 bool color_histogram::base_defined = false;
 
 color_histogram::color_histogram()
 {
 	if (!base_defined)
 	{
+		//berechnen HSV verteilung und dann konvertieren in RGB
 		hst m;
-		ushort v = 0;
-		ushort s = 0;
-		ushort schritt = 256 / 4;
-		for (ushort h = 0; h < 256; h += schritt)
-			for (s = 0; s < 256; s += schritt)
-				 for (v = 0; v < 256; v += schritt)
+		int i = 0;
+		double h = 0.0;
+		double s = 0.5;
+		double v = 0.5;
+		double schritt = 10.0;
+
+		HSV hsv(0.0,0.0,0.0);
+		RGB rgb(0.0, 0.0, 0.0);
+
+		for (h = 0; h < 360; h += schritt)
+
 
 		{
 
-			m.treffer = 1;
-			m.color.x = h;
-			m.color.y = s;
-			m.color.z = v;
-			base.push_back(m);
+			hsv.H = h;
+			hsv.S = s;
+			hsv.V = v;
+
+			rgb = ::HSVToRGB(hsv);
+
+			base[i].color.x = rgb.R;
+			base[i].color.y = rgb.G;
+			base[i].color.z = rgb.B;
+			i++;
 
 		}
+
+
+		//Grauwerte
+		for (ushort b = 0; b < 256; b += 16)
+				{
+
+					m.treffer = 1;
+					m.color.x = b;
+					m.color.y = b;
+					m.color.z = b;
+					base[i++] = m;
+
+				}
+
+
 
 		base_defined = true;
 	}
@@ -45,7 +71,7 @@ ushort color_histogram::compare(color_histogram* h)
 
 void color_histogram::reset()
 {
-	for (uint8_t i = 0; i < COLOR_HISTOGRAMM_BREITE; i++)
+	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
 	{
 		histogram[i] = 0;
 	}
@@ -72,17 +98,15 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	short dst;
 
 	int treff = 0;
-	for (uint8_t i = 0; i < COLOR_HISTOGRAMM_BREITE; i++) //TODO leistung schwach
+	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //TODO leistung schwach
 	{
 		// ablegen in naechst naehres
-		dst = abs(color_distance(clr, base[i].color, RGB_3SUM));
+		dst = abs(color_distance(clr, base[i].color, RGB_SQUARE));
 
-		if(d > dst)
+		if(dst < d)
 		{
 			treff = i;
 			d = dst;
-			//histogram[i].treffer++;
-			//histogram[i].color = middle_color(h.color, clr);
 		}
 
 	}
@@ -93,12 +117,12 @@ void color_histogram::add(PixelColor clr, ushort distance)
 void color_histogram::draw(Point start)
 {
 	Mat plotResult; 
-	const int width = 200;
+	const int width = 600;
 	const int high = 120;
 	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
 	
 	plotResult.setTo(Scalar(127, 127, 127));
-	int sz = COLOR_HISTOGRAMM_BREITE;
+	int sz = COLOR_HISTOGRAM_BREITE;
 
 	if (sz == 0)
 	{
@@ -135,24 +159,16 @@ void color_histogram::draw_base()
 	const int high = 120;
 	plotResult.create(high, width, CV_8UC3); //TODO Leisungsverlust.
 
-	plotResult.setTo(Scalar(0, 0, 127));
-	int sz = base.size();
-
-	if (sz == 0)
-	{
-		//TODO Assert hinzufügen
-		cout << "keine farben in Histogramm" << endl;
-		return;
-	}
+	plotResult.setTo(Scalar(0, 0, 0));
+	int sz = COLOR_HISTOGRAM_BREITE;
 
 	int step = width / sz;
 
 	for (int i = 0; i < sz; i++)
 	{
-		hst h = base[i];
-		cv::rectangle(plotResult, Rect(i*step, 0, step, high), Scalar(h.color.x, h.color.y, h.color.z), -1);
+		cv::rectangle(plotResult, Rect(i*step, 0, step, high), Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
 	}
 
-	cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
+	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
 	imshow("hist", plotResult);
 }
