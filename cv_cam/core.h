@@ -35,6 +35,13 @@ public:
 		B = b;
 	}
 
+	RGB(void)
+	{
+		R = 0;
+		G = 0;
+		B = 0;
+	}
+
 	bool Equals(RGB rgb)
 	{
 		return (R == rgb.R) && (G == rgb.G) && (B == rgb.B);
@@ -55,6 +62,13 @@ public:
 		V = v;
 	}
 
+	HSV(void)
+	{
+		H = 0.0;
+		S = 0.0;
+		V = 0.0;
+	}
+
 	bool Equals(HSV hsv)
 	{
 		return (H == hsv.H) && (S == hsv.S) && (V == hsv.V);
@@ -62,3 +76,6 @@ public:
 };
 
  RGB HSVToRGB(HSV hsv);
+ HSV RGBToHSV(RGB rgb);
+
+ short hsv_distance(HSV hsv_color1, HSV color2);

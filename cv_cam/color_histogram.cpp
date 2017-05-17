@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "color_histogram.h"
 
-hst color_histogram::base[COLOR_HISTOGRAM_BREITE];
+hst_hsv color_histogram::base[COLOR_HISTOGRAM_BREITE];
 bool color_histogram::base_defined = false;
 
 color_histogram::color_histogram()
@@ -29,11 +29,13 @@ color_histogram::color_histogram()
 			hsv.S = s;
 			hsv.V = v;
 
-			rgb = ::HSVToRGB(hsv);
+			//rgb = ::HSVToRGB(hsv);
 
-			base[i].color.x = rgb.R;
-			base[i].color.y = rgb.G;
-			base[i].color.z = rgb.B;
+			//base[i].color.x = rgb.R;
+			//base[i].color.y = rgb.G;
+			//base[i].color.z = rgb.B;
+
+			base[i].color = hsv;
 			i++;
 
 		}
@@ -43,11 +45,11 @@ color_histogram::color_histogram()
 		for (ushort b = 0; b < 256; b += 256/COLOR_HISTOGRAM_GRAYS)
 				{
 
-					m.treffer = 1;
-					m.color.x = b;
-					m.color.y = b;
-					m.color.z = b;
-					base[i++] = m;
+					//m.treffer = 1;
+					//m.color.x = b;
+					//m.color.y = b;
+					//m.color.z = b;
+					base[i++].color = RGBToHSV(RGB(b,b,b));
 
 				}
 
@@ -76,6 +78,12 @@ void color_histogram::reset()
 	{
 		histogram[i] = 0;
 	}
+
+	for (uint8_t i = 0; i < COLOR_HISTOGRAM_MAIN; i++)
+	{
+		main_clr[i].frequency = 0.0;
+	}
+
 	//histogram.clear();
 }
 
@@ -93,11 +101,14 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	short d = 1000;
 	short dst;
 
+	HSV hsv_color = ::RGBToHSV(RGB(clr.z, clr.y, clr.x));
+
 	int treff = 0;
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //TODO leistung schwach
 	{
 		// ablegen in naechst naehres
-		dst = abs(color_distance(clr, base[i].color, RGB_SUM_EACH_COLOR));
+		//dst = abs(color_distance(clr, base[i].color, RGB_SUM_EACH_COLOR));
+		dst = hsv_distance(hsv_color, base[i].color);
 
 		if(dst < d)
 		{
@@ -137,12 +148,15 @@ void color_histogram::draw(Point start)
 
 	int step = width / sz;
 	float mag = (float)max / (float)high;
+	RGB base_RGB(0,0,0);
+
 	for (int i = 0; i < sz; i++)
 	{
 		//hst h = histogram[i];
+		base_RGB = HSVToRGB(base[i].color);
 		int hi = (int)((float)(histogram[i])/mag); //TODO mag == 0
-		cv::rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
-		cv::rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base[i].color.x, base[i].color.y, base[i].color.z), -1);
+		cv::rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
+		cv::rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
 		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 

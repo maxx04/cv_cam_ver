@@ -90,7 +90,14 @@ static void onMouse_color(int event, int x, int y, int, void*)
 		//Draw color
 		PixelColor a = s_set.get_color(x, y, &frame1);
 
-		cout << format("%02d - %02d", x, y) << " >> " << format("%3d:%3d:%3d", a.x,a.y,a.z) << endl;
+		HSV hsv(0.0, 0.0, 0.0);
+		RGB rgb(a.z, a.y, a.x);
+
+		hsv = RGBToHSV(rgb);
+
+		cout << format("%02d-%02d", x, y);
+		cout << format(" G:%3d B:%3d R:%3d", a.x, a.y, a.z);
+		cout << format("--H:%.0f S:%.2f V:%.2f", hsv.H, hsv.S, hsv.V) << endl;
 
 
 	}
