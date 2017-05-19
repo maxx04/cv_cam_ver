@@ -16,7 +16,7 @@ public:
 	key_point_gradient();
 	~key_point_gradient();
 	void get_direction(Mat frame, Point pos);
-	void check(const Mat * input, int pegel);
+	void query(const Mat * input, int pegel);
 
 private:
 	static uint index[KP_POINTS_IN_CIRCLE];

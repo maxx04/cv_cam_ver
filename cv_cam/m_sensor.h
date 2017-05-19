@@ -55,7 +55,7 @@ public:
 	m_sensor(Point p, uint sz);
 	~m_sensor();
 
-	void check(const Mat* input, int pegel);
+	void query(const Mat* input, int pegel);
 	void search_keypoints(short * values, int pegel);
 	void search_sectors(PixelColor next_pixel, int pegel);
 	void search_sectors(Mat * sensor_mat, int pegel, const color_distance_enum dist);

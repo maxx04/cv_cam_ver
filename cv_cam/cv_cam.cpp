@@ -6,6 +6,7 @@
 #include "m_sensor.h"
 #include "sensor_set.h"
 #include "key_points_set.h"
+#include "contours.h"
 
 using namespace cv;
 using namespace std;
@@ -18,6 +19,7 @@ Mat frame0, frame1, fg0, fg1;
 
 sensor_set s_set;
 key_points_set k_set; // global
+contours cnt;
 
 static void help()
 {
@@ -64,7 +66,7 @@ static void redraw_all(int /*arg*/, void*)
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set.check_sensors(&frame1, pegel); // berechne sensoren neu
+	s_set.query_sensors(&frame1, pegel); // berechne sensoren neu
 	s_set.add_keypoints(&k_set, &frame1); // ausleite sensoren neu
 	redraw_all(0, 0);
 }
@@ -190,8 +192,10 @@ int main(int argc, const char * argv[])
 		const double start = (double)getTickCount();
 
 // --------------------------------------------------------------------------------
-//	finde keypoints
-		s_set.check_sensors(&frame1, pegel);
+//	finde keypoints, histogramms
+		s_set.query_sensors(&frame1, pegel);
+//	finde konturen, bereiche mit gleichen histogrammen
+		cnt = s_set.find_contours();
 // --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();

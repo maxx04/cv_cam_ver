@@ -94,10 +94,10 @@ void sensor_set::magnify_selected_sensor(const Mat * input_image, const String m
 	m.show(input_image, magnifyed_view_window);
 }
 
-void sensor_set::check_sensors(const Mat * frame, int pegel)
+void sensor_set::query_sensors(const Mat * frame, int pegel)
 {
 	for (int m = 0; m < sensors.size(); m++) 
-		sensors[m].check(frame, pegel);
+		sensors[m].query(frame, pegel);
 }
 
 void sensor_set::add_keypoints(key_points_set* key_points, Mat* frame)
@@ -198,4 +198,14 @@ PixelColor sensor_set::get_color(int x, int y, const Mat * input)
 	m_sensor m = sensors[selected_sensor];
 
 	return m.get_color(x, y, input);
+}
+
+contours sensor_set::find_contours(void)
+{
+	contours cnt;
+
+
+
+
+	return cnt;
 }

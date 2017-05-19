@@ -66,7 +66,7 @@ void key_point_gradient::get_direction(Mat frame, Point pos)
 {
 }
 
-void key_point_gradient::check(const Mat * input, int pegel)
+void key_point_gradient::query(const Mat * input, int pegel)
 {
 
 	//kopieren teil vom bild

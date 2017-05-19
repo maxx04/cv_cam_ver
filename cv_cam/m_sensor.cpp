@@ -70,12 +70,11 @@ m_sensor::~m_sensor()
 
 
 
-void m_sensor::check(const Mat * input, int pegel)
+void m_sensor::query(const Mat * input, int pegel)
 {
 
 	//kopieren teil vom bild
 	Rect roi(pos.x, pos.y, size, size);
-
 	(*input)(roi).copyTo(out);
 
 	PixelColor* pixelPtr = (PixelColor*)out.data; 
@@ -510,6 +509,7 @@ bool m_sensor::cross(Point mp) //HACK Size beruecksichtigen, auf Rect aendern
 
 	return true;
 }
+
 bool m_sensor::cross(m_sensor* m) 
 {
 	int s = (int)size;

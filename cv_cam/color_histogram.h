@@ -26,7 +26,7 @@ protected:
 	static bool base_defined;
 
 	uint8_t histogram[COLOR_HISTOGRAM_BREITE]; // treffer für base colors
-	hst_hsv main_clr[COLOR_HISTOGRAM_MAIN];
+	hst_hsv main_clr[COLOR_HISTOGRAM_MAIN]; // noch nicht verwendet, als alternative zu base
 
 };
 
