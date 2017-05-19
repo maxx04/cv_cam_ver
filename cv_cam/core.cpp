@@ -181,5 +181,8 @@ cv::Vec3b HSVtoBGR(const cv::Vec3f& hsv)
 
  short hsv_distance(HSV color1, HSV color2)
  {
-	 return abs(color1.H-color2.H)+0.5*abs(color1.S - color2.S)+ 0.5*abs(color1.V - color2.V);
+	 if (color1.S < 0.2 || color1.S > 0.8)
+		 return abs(color1.V - color2.V) * 360;
+	 else
+	 return abs(color1.H-color2.H);
  }

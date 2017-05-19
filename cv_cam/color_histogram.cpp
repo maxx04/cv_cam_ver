@@ -13,15 +13,15 @@ color_histogram::color_histogram()
 		int i = 0;
 		double h = 0.0;
 		double s = 0.5;
-		double v = 0.7;
+		double v = 0.5;
 		double schritt = 360.0/double(COLOR_HISTOGRAM_COLORS);
 
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(0.0, 0.0, 0.0);
 
 		for (h = 0; h < 360; h += schritt)
-			for (s = 0.25; s <= 0.75; s += 0.25)
-				for (v = 0.45; v <= 0.75; v += 0.15)
+			//for (s = 0.25; s <= 0.75; s += 0.25)
+			//	for (v = 0.45; v <= 0.75; v += 0.15)
 
 		{
 
