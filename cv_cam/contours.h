@@ -1,20 +1,21 @@
 #pragma once
 #include "color_histogram.h"
+
+struct contour_hist
+{
+	vector<Point> _cnt;
+	color_histogram histogram;
+};
+
 class contours
 {
-	struct contour_hist
-	{
-		vector<Point> _cnt;
-		color_histogram histogram;
-	};
-
 public:
 	contours();
 	~contours();
 	void draw();
-	void add(color_histogram h);
+	void new_contour(Point p, color_histogram histogram);
+	void add_point(Point p);
 
-protected:
-	vector<contour_hist> _contours;
+	vector<contour_hist> _contours; //TODO make protected
 };
 

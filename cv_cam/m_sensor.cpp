@@ -331,6 +331,16 @@ Size m_sensor::get_size()
 	return Size(size, size);
 }
 
+color_histogram m_sensor::get_histogramm()
+{
+	return clr_hst;
+}
+
+ushort m_sensor::compare_histogramms(m_sensor * ms)
+{
+	return clr_hst.compare(ms->get_histogramm()); //TODO Leistung
+}
+
 inline short m_sensor::get_next_ring_value(ushort index, int8_t versatz) //HACK optimierung notwendig
 {
 	CV_Assert(index <= 256 && abs(versatz) < 127);

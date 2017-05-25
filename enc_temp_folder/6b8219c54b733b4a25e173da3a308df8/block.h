@@ -182,7 +182,7 @@ public:
 			i++;
 		}
 
-		cout << "block contours: " << cnt._contours.size() << endl;
+		cout << "block: " << cnt._contours.size() << endl;
 		
 	}
 

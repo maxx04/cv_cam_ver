@@ -63,6 +63,9 @@ public:
 	Point get_position();
 	void set_position(Point p);
 	Size get_size();
+	color_histogram get_histogramm();
+	ushort compare_histogramms(m_sensor * ms);
+
 	inline short get_next_ring_value(ushort index, int8_t versatz);
 
 	void smooth_values( uint8_t range);

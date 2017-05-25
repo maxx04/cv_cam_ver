@@ -4,10 +4,12 @@
 
 
 
+
 class pyramide
 {
 
-	 block<block <m_sensor>> b1; //pyramide 2 mal tief
+	 block <m_sensor> b1; //pyramide 2 mal tief
+
 
 public:
 	pyramide();
@@ -15,5 +17,6 @@ public:
 	~pyramide();
 
 	void set_position(Point p);
+	void query(const Mat * input, int pegel);
 };
 

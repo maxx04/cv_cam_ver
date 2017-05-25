@@ -15,6 +15,7 @@ public:
 	color_histogram();
 	~color_histogram();
 	ushort compare(color_histogram * h);
+	ushort compare(color_histogram h);
 	void reset();
 	void add(PixelColor clr, ushort distance);
 	void draw(Point start);

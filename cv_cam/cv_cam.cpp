@@ -199,6 +199,10 @@ int main(int argc, const char * argv[])
 // --------------------------------------------------------------------------------
 //	finde keypoints, histogramms
 		s_set.query_sensors(&frame1, pegel);
+
+		pyr.query(&frame1, pegel);
+		
+
 //	finde konturen, bereiche mit gleichen histogrammen
 		cnt = s_set.find_contours();
 // --------------------------------------------------------------------------------

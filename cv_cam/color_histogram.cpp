@@ -76,6 +76,16 @@ ushort color_histogram::compare(color_histogram* h)
 	return sum;
 }
 
+ushort color_histogram::compare(color_histogram h)
+{
+		ushort sum = 0;
+	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
+	{
+		sum += abs(histogram[i] - h.histogram[i]);
+	}
+	return sum;
+}
+
 void color_histogram::reset()
 {
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
