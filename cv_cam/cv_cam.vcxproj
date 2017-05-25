@@ -144,6 +144,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="block.h" />
     <ClInclude Include="color_histogram.h" />
     <ClInclude Include="contours.h" />
     <ClInclude Include="core.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="key_point_gradient.h" />
     <ClInclude Include="m_sensor.h" />
     <ClInclude Include="plot.hpp" />
+    <ClInclude Include="pyramide.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="segment.h" />
     <ClInclude Include="sensor_set.h" />
@@ -167,6 +169,7 @@
     <ClCompile Include="key_point_gradient.cpp" />
     <ClCompile Include="m_sensor.cpp" />
     <ClCompile Include="plot.cpp" />
+    <ClCompile Include="pyramide.cpp" />
     <ClCompile Include="segment.cpp" />
     <ClCompile Include="sensor_set.cpp" />
     <ClCompile Include="stdafx.cpp">

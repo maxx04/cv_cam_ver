@@ -62,7 +62,7 @@ key_point_gradient::~key_point_gradient()
 {
 }
 
-void key_point_gradient::get_direction(Mat frame, Point pos)
+void key_point_gradient::get_direction(Mat block_1, Point pos)
 {
 }
 

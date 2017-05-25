@@ -63,11 +63,15 @@ m_sensor::m_sensor(Point p, uint sz)
 
 }
 
+m_sensor::m_sensor()
+{
+	m_sensor(Point(0, 0), SENSOR_RADIUS * 2 + 2);
+}
+
 m_sensor::~m_sensor()
 {
 
 }
-
 
 
 void m_sensor::query(const Mat * input, int pegel)
@@ -314,6 +318,11 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_e
 Point m_sensor::get_position()
 {
 	return pos;
+}
+
+void m_sensor::set_position(Point p)
+{
+	pos = p;
 }
 
 Size m_sensor::get_size()

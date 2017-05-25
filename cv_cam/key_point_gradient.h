@@ -15,7 +15,7 @@ public:
 	key_point_gradient(Point p);
 	key_point_gradient();
 	~key_point_gradient();
-	void get_direction(Mat frame, Point pos);
+	void get_direction(Mat block_1, Point pos);
 	void query(const Mat * input, int pegel);
 
 private:

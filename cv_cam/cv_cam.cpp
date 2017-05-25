@@ -7,6 +7,9 @@
 #include "sensor_set.h"
 #include "key_points_set.h"
 #include "contours.h"
+#include "pyramide.h"
+
+
 
 using namespace cv;
 using namespace std;
@@ -16,6 +19,8 @@ int pegel = 25;
 int number_sensors;
 
 Mat frame0, frame1, fg0, fg1;
+
+pyramide pyr;
 
 sensor_set s_set;
 key_points_set k_set; // global
@@ -124,7 +129,6 @@ int main(int argc, const char * argv[])
 		cerr << "Unable to open video file: " << endl;
 		exit(EXIT_FAILURE);
 	}
-
 
 	cam.read(frame0);
 

@@ -53,6 +53,7 @@ public:
 	vector<segment> line_segments;
 
 	m_sensor(Point p, uint sz);
+	m_sensor();
 	~m_sensor();
 
 	void query(const Mat* input, int pegel);
@@ -60,6 +61,7 @@ public:
 	void search_sectors(PixelColor next_pixel, int pegel);
 	void search_sectors(Mat * sensor_mat, int pegel, const color_distance_enum dist);
 	Point get_position();
+	void set_position(Point p);
 	Size get_size();
 	inline short get_next_ring_value(ushort index, int8_t versatz);
 

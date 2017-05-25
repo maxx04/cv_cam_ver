@@ -94,19 +94,19 @@ void sensor_set::magnify_selected_sensor(const Mat * input_image, const String m
 	m.show(input_image, magnifyed_view_window);
 }
 
-void sensor_set::query_sensors(const Mat * frame, int pegel)
+void sensor_set::query_sensors(const Mat * block_1, int pegel)
 {
 	for (int m = 0; m < sensors.size(); m++) 
-		sensors[m].query(frame, pegel);
+		sensors[m].query(block_1, pegel);
 }
 
-void sensor_set::add_keypoints(key_points_set* key_points, Mat* frame)
+void sensor_set::add_keypoints(key_points_set* key_points, Mat* block_1)
 {
 	
 	vector<Point> temp(20);
 
 	key_points->keypoints_vector.clear();
-	key_points->activ_frame = frame; //HACK make privat
+	key_points->activ_frame = block_1; //HACK make privat
 
 	for each  (m_sensor m in sensors)
 	{
