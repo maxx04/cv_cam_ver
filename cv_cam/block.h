@@ -141,45 +141,80 @@ public:
 	{
 		ushort dist = 0;
 
-		color_histogram ch = blocks[0].get_histogramm();
+		color_histogram ch = blocks[1].get_histogramm();
 
-		cnt.new_contour(blocks[0].get_position(), ch);
+		cnt.new_contour(blocks[1].get_position(), ch);
 		
 		// vergleiche histogrammen von sensoren
 
-		ushort i = 1;
+		ushort i = 2;
+
+		while (i < BLOCK_ZAHL)
+		{
+			ch = blocks[i-1].get_histogramm();
+
+			// mit naechstem sensor vergleichen
+
+			dist = ch.compare(blocks[i].get_histogramm());
+
+			if (dist < 50) 
+			{
+				cnt.add_point(blocks[i].get_position());
+				//TODO mitteln histogram?
+			}
+			else
+			{
+				cnt.new_contour(blocks[i].get_position(), blocks[i].get_histogramm());
+			}
+
+			i++;
+		}
+
+		// letztes mit erstem vergleichen
+		ch = blocks[BLOCK_ZAHL - 1].get_histogramm();
+
+		// mit naechstem sensor vergleichen
+
+		dist = ch.compare(blocks[1].get_histogramm()); //HACK reihenfolge den Punkten beachten
+
+		if (dist < 50)
+		{
+			cnt.add_point(blocks[1].get_position());
+			//TODO mitteln histogram?
+		}
+		else
+		{
+			cnt.new_contour(blocks[BLOCK_ZAHL - 1].get_position(), blocks[BLOCK_ZAHL - 1].get_histogramm());
+		}
+
+		// mittleres punkt mit allen konturen vergleichen
+
 		ushort k = 0;
 		ushort min_dist = 20000;
 		ushort beste_contour = 0;
 
-		while (i < BLOCK_ZAHL)
+		ch = blocks[0].get_histogramm();
+
+		for each (contour_hist h1 in cnt._contours)
 		{
-			ch = blocks[i].get_histogramm();
+			dist = ch.compare(h1.histogram);
 
-			// mit jedem kontour kleinste abstand
-			k = 0;
-			min_dist = 20000;
-			for each (contour_hist h1 in cnt._contours)
+			if (dist < min_dist)
 			{
-				dist = ch.compare(h1.histogram);
+				min_dist = dist;
+				beste_contour = k;
+			}
+			k++;
+		}
 
-				if (dist < min_dist) 
-				{
-					min_dist = dist;
-					beste_contour = k;
-				}
-				k++;
-			}
-			if (min_dist < 50) // TODO Zahl ersetzen
-			{
-				cnt._contours[beste_contour]._cnt.push_back(blocks[i].get_position());
-			}
-			else
-			{
-				cnt.new_contour(blocks[i].get_position(), ch);
-			}
-
-			i++;
+		// wenn alle gleich --> den punkt ausschliessen
+		if (min_dist < 50 && cnt._contours.size() > 1) // TODO Zahl ersetzen
+		{
+			cnt._contours[beste_contour]._cnt.push_back(blocks[i].get_position());
+		}
+		else
+		{
+			cnt.new_contour(blocks[0].get_position(), ch);
 		}
 
 		cout << "block contours: " << cnt._contours.size() << endl;
