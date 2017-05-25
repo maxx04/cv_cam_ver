@@ -20,7 +20,7 @@ int number_sensors;
 
 Mat frame0, frame1, fg0, fg1;
 
-pyramide pyr;
+pyramide pyr(Point(500, 500));
 
 sensor_set s_set;
 key_points_set k_set; // global
@@ -133,6 +133,7 @@ int main(int argc, const char * argv[])
 	cam.read(frame0);
 
 	s_set = sensor_set(frame0, 2800);
+
 
 	number_sensors = s_set.number_sensors;
 	

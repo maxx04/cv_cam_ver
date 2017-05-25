@@ -28,9 +28,14 @@ public:
 	
 	}
 
+	Size get_size()
+	{
+		return Size(size, size);
+	}
+
 	void set_position(Point p)
 	{
-		int sz = 10; // T[0].get_size().width; //HACK nur breite
+		int sz = blocks[0].get_size().width; //HACK nur breite
 
 		blocks[0].set_position(p);
 		blocks[1].set_position(Point(p.x - sz, p.y));

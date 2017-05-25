@@ -65,7 +65,8 @@ m_sensor::m_sensor(Point p, uint sz)
 
 m_sensor::m_sensor()
 {
-	m_sensor(Point(0, 0), SENSOR_RADIUS * 2 + 2);
+	size = SENSOR_RADIUS * 2 + 2;
+	m_sensor(Point(0, 0), size);
 }
 
 m_sensor::~m_sensor()

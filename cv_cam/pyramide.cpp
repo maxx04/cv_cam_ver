@@ -9,6 +9,11 @@ pyramide::pyramide()
 	//b1.size++;
 }
 
+pyramide::pyramide(Point p)
+{
+	set_position(Point(100, 100));
+}
+
 
 pyramide::~pyramide()
 {
