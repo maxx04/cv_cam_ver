@@ -16,19 +16,13 @@ public:
 	static ushort size; // block breite
 	contours cnt; //Konturen die werden erstellt aus vorhandenen bloecken.
 
-
-
 	block()
 	{
+		//TODO aktuell grenzsensoren werden doppelt berechnet.
+		// liegen aufeinander. Alternativ, loesung mit adresspeicherung vom sensor
+		size = blocks[0].get_size().width * 2; 
+	}	
 	
-	}
-	
-	block(Point p) // p - mitte vom block
-	{
-		set_position(p);
-	} 
-	
-
 	~block()
 	{
 	
@@ -42,19 +36,17 @@ public:
 	// Geht von oben nach unten
 	void set_position(Point p)
 	{
-		int sz = blocks[0].get_size().width; //HACK nur breite
 
 		blocks[0].set_position(p);
-		blocks[1].set_position(Point(p.x - sz, p.y));
-		blocks[2].set_position(Point(p.x - sz, p.y - sz));
-		blocks[3].set_position(Point(p.x, p.y - sz));
-		blocks[4].set_position(Point(p.x + sz, p.y - sz));
-		blocks[5].set_position(Point(p.x + sz, p.y));
-		blocks[6].set_position(Point(p.x + sz, p.y + sz));
-		blocks[7].set_position(Point(p.x, p.y + sz));
-		blocks[8].set_position(Point(p.x - sz, p.y + sz));
+		blocks[1].set_position(Point(p.x - size, p.y));
+		blocks[2].set_position(Point(p.x - size, p.y - size));
+		blocks[3].set_position(Point(p.x, p.y - size));
+		blocks[4].set_position(Point(p.x + size, p.y - size));
+		blocks[5].set_position(Point(p.x + size, p.y));
+		blocks[6].set_position(Point(p.x + size, p.y + size));
+		blocks[7].set_position(Point(p.x, p.y + size));
+		blocks[8].set_position(Point(p.x - size, p.y + size));
 
-		size = 3 * sz;
 	}
 
 	//Konturen zusammenstellen von 1 bis 9 in cnt 
@@ -82,7 +74,44 @@ public:
 		// --> anbinden kontur 2 zu kontur 1 in punkt 2
 		// --> dann naechstes kontur
 
-		blocks[0].cnt.size();
+		cnt._contours.clear();
+
+		for (ushort i = 0; i < BLOCK_ZAHL; i++)
+		{
+			for each (contour_hist ch in blocks[i].cnt._contours)
+			{
+				cnt.add_contour(ch);
+			}
+			
+		}
+
+
+
+	}
+
+	void draw_contours(const Mat* frame)
+	{
+		cnt.draw_contour(frame);
+	}
+
+	void quiery(const Mat * input, int pegel)
+	{
+		for (ushort i = 0; i < BLOCK_ZAHL; i++)
+		{
+			blocks[i].query(input, pegel);
+		}
+
+		connect_contours();
+	}
+
+	void query_all(const Mat * input, int pegel)
+	{
+		for (ushort i = 0; i < BLOCK_ZAHL; i++)
+		{
+			blocks[i].query_all(input, pegel);
+		}
+
+		connect_contours();
 	}
 };
 
@@ -96,12 +125,12 @@ class block <m_sensor> {
 
 public:
 
-	ushort size; //TODO must be static // block breite
+	ushort size; // block breite
 	contours cnt; //Konturen die werden erstellt aus vorhandenen bloecken.
 
 	block()
 	{
-
+		size = blocks[0].get_size().width;
 	}
 
 	block(Point p) // p - mitte vom block
@@ -122,31 +151,31 @@ public:
 
 	void set_position(Point p)
 	{
-		int sz = blocks[0].get_size().width; //HACK nur breite
 
 		blocks[0].set_position(p);
-		blocks[1].set_position(Point(p.x - sz, p.y));
-		blocks[2].set_position(Point(p.x - sz, p.y - sz));
-		blocks[3].set_position(Point(p.x, p.y - sz));
-		blocks[4].set_position(Point(p.x + sz, p.y - sz));
-		blocks[5].set_position(Point(p.x + sz, p.y));
-		blocks[6].set_position(Point(p.x + sz, p.y + sz));
-		blocks[7].set_position(Point(p.x, p.y + sz));
-		blocks[8].set_position(Point(p.x - sz, p.y + sz));
+		blocks[1].set_position(Point(p.x - size, p.y));
+		blocks[2].set_position(Point(p.x - size, p.y - size));
+		blocks[3].set_position(Point(p.x, p.y - size));
+		blocks[4].set_position(Point(p.x + size, p.y - size));
+		blocks[5].set_position(Point(p.x + size, p.y));
+		blocks[6].set_position(Point(p.x + size, p.y + size));
+		blocks[7].set_position(Point(p.x, p.y + size));
+		blocks[8].set_position(Point(p.x - size, p.y + size));
 
-		size = 3 * sz;
 	}
 
 	void connect_contours(void)
 	{
 		ushort dist = 0;
 
+		//HACK Kann man mit vorherigem zustand vergleichen
+		cnt._contours.clear(); 
+
 		color_histogram ch = blocks[1].get_histogramm();
 
 		cnt.new_contour(blocks[1].get_position(), ch);
 		
 		// vergleiche histogrammen von sensoren
-
 		ushort i = 2;
 
 		while (i < BLOCK_ZAHL)
@@ -208,9 +237,10 @@ public:
 		}
 
 		// wenn alle gleich --> den punkt ausschliessen
-		if (min_dist < 50 && cnt._contours.size() > 1) // TODO Zahl ersetzen
+		if (min_dist < 50) // TODO Zahl ersetzen
 		{
-			cnt._contours[beste_contour]._cnt.push_back(blocks[i].get_position());
+			if(cnt._contours.size() > 1)
+			cnt._contours[beste_contour]._cnt.push_back(blocks[0].get_position());
 		}
 		else
 		{
@@ -221,7 +251,12 @@ public:
 		
 	}
 
-	void quiery_all(const Mat * input, int pegel)
+	void draw_contours(const Mat* frame)
+	{
+		cnt.draw_contour(frame);
+	}
+
+	void query_all(const Mat * input, int pegel)
 	{
 		for (ushort i = 0; i < BLOCK_ZAHL; i++)
 		{

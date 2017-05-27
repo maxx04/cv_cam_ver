@@ -20,7 +20,7 @@ int number_sensors;
 
 Mat frame0, frame1, fg0, fg1;
 
-pyramide pyr(Point(500, 500));
+pyramide pyr;
 
 sensor_set s_set;
 key_points_set k_set; // global
@@ -60,11 +60,16 @@ static void redraw_all(int /*arg*/, void*)
 	//zeichne linien
 	s_set.show_line_segments(&tmp);
 
+
+	pyr.draw_contours(&tmp);
+
 	//zeige bild
 	imshow("points", tmp);
 
 	//zeichne ausgewaehlte sensor
 	s_set.magnify_selected_sensor(&frame1, "magnify");
+
+
 
 
 }
@@ -134,6 +139,7 @@ int main(int argc, const char * argv[])
 
 	s_set = sensor_set(frame0, 2800);
 
+	pyr.set_position(Point(500, 500));
 
 	number_sensors = s_set.number_sensors;
 	
@@ -201,10 +207,10 @@ int main(int argc, const char * argv[])
 		s_set.query_sensors(&frame1, pegel);
 
 		pyr.query(&frame1, pegel);
-		
+
 
 //	finde konturen, bereiche mit gleichen histogrammen
-		cnt = s_set.find_contours();
+		//cnt = s_set.find_contours();
 // --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();

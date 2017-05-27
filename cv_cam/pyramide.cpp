@@ -4,12 +4,7 @@
 
 pyramide::pyramide()
 {
-
-}
-
-pyramide::pyramide(Point p)
-{
-	set_position(p);
+	
 }
 
 
@@ -25,5 +20,12 @@ void pyramide::set_position(Point p)
 
 void pyramide::query(const Mat * input, int pegel)
 {
-	b1.quiery_all(input, pegel);
+	b1.query_all(input, pegel);
+}
+
+
+
+void pyramide::draw_contours(const Mat* frame)
+{
+	b1.draw_contours(frame);
 }

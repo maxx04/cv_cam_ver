@@ -8,15 +8,15 @@
 class pyramide
 {
 
-	 block <m_sensor> b1; //pyramide 2 mal tief
+	 block <block <m_sensor>> b1; //pyramide 2 mal tief
 
 
 public:
 	pyramide();
-	pyramide(Point p);
 	~pyramide();
 
 	void set_position(Point p);
 	void query(const Mat * input, int pegel);
+	void draw_contours(const Mat* frame);
 };
 

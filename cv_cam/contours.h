@@ -10,12 +10,17 @@ struct contour_hist
 class contours
 {
 public:
+	vector<contour_hist> _contours; //TODO make protected
+
+
 	contours();
 	~contours();
 	void draw();
 	void new_contour(Point p, color_histogram histogram);
 	void add_point(Point p);
+	void add_contour(contour_hist cnt);
+	void draw_contour(const Mat * frame);
 
-	vector<contour_hist> _contours; //TODO make protected
+
 };
 
