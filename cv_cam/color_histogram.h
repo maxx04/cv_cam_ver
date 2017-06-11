@@ -12,6 +12,9 @@ class color_histogram
 #define COLOR_HISTOGRAM_MAIN 8
 
 public:
+
+	static hst_hsv base[COLOR_HISTOGRAM_BREITE]; //TODO make protected
+
 	color_histogram();
 	~color_histogram();
 	ushort compare(color_histogram * h);
@@ -19,15 +22,14 @@ public:
 	void reset();
 	void add(PixelColor clr, ushort distance);
 	void draw(Point start);
-
-	static hst_hsv base[COLOR_HISTOGRAM_BREITE];
-
+	Scalar get_max_color();
 protected:
 
 	static bool base_defined;
 
 	uint8_t histogram[COLOR_HISTOGRAM_BREITE]; // treffer für base colors
-	hst_hsv main_clr[COLOR_HISTOGRAM_MAIN]; // noch nicht verwendet, als alternative zu base
+	//hst_hsv main_clr[COLOR_HISTOGRAM_MAIN]; // noch nicht verwendet, als alternative zu base
 
 };
+
 

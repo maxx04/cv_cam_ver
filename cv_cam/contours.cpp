@@ -26,7 +26,7 @@ void contours::new_contour(Point p, color_histogram histogram)
 
 void contours::add_point(Point p)
 {
-	int size = _contours.size()-1;
+	int size = _contours.size()-1; //HACK wenn noch keine konturen
 	_contours[size]._cnt.push_back(p); //HACK letzte kontour ??
 }
 
@@ -41,10 +41,14 @@ void contours::draw_contour(const Mat* frame)
 	{
 
 		Point pa = c._cnt[0];
+
+		Scalar color = c.histogram.get_max_color(); 
+		//Scalar(rand() & 255, rand() & 255, rand() & 255);
+
 		for each (Point p in c._cnt)
 		{
 			assert(p.y != 0);
-			cv::line((*frame), pa, p, Scalar(250, 250, 0));
+			cv::line((*frame), pa, p, color);
 			pa = p;
 		}
 

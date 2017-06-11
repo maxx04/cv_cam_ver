@@ -10,6 +10,7 @@ struct contour_hist
 class contours
 {
 public:
+	// konturen
 	vector<contour_hist> _contours; //TODO make protected
 
 

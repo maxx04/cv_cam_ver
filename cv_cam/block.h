@@ -4,11 +4,19 @@
 
 #define BLOCK_ZAHL 9
 
+struct side_contour
+{
+	ushort contour_nr;
+	ushort point_nr;
+};
 
 template <class T>
 class block
 {
-
+	///	die adressen für Konturpunkten auf den seiten.
+	/// entsteht wenn konturen werden aufgebaut
+	/// soll gelöscht werden wenn nächste blocklevel konturzusammensetzung abgeschlossen ist.
+	vector <side_contour> side_points[4];
 	T blocks[BLOCK_ZAHL]; // selber blocks. erste mitte.
 
 public:
@@ -33,6 +41,17 @@ public:
 		return Size(size, size);
 	} 
 
+	vector<Point> get_side1()
+	{
+		vector<Point> vp;
+
+		vp.push_back(blocks[8].get_side1());
+		vp.push_back(blocks[1].get_side1());
+		vp.push_back(blocks[2].get_side1());
+
+		return vp;
+	}
+
 	// Geht von oben nach unten
 	void set_position(Point p)
 	{
@@ -55,10 +74,10 @@ public:
 	{
 		// jedes grenzbereich wird zusammengeführt.
 		// was ist das grenzbereich? Zusammenkomen begrenzung und konturgrenze.
-		// die stuecke zwischen den punkten mit gleiche Histogamm werden geloescht 
+		// die stuecke zwischen den punkten mit gleiches Histogamm werden geloescht 
 		// und die zwei enden vom kontur werden zusammengebunden.
 
-		// bloecke teilen gleiche sensoren oder nicht? Nein
+		// bloecke teilen gleiche sensoren oder nicht?
 		// Anzahl den Grenzpunkten ist gleich
 
 		// --> gehen durch die grenze
@@ -121,7 +140,11 @@ ushort block<T>::size = 0;
 template <>
 class block <m_sensor> {
 
-	m_sensor blocks[BLOCK_ZAHL]; // selber blocks. erste mitte.
+	// seitliche punkte, links, oben, rechts, unten.
+	vector <side_contour> side_points[4];
+	// unten-links, oben links, oben rechts, unten rechts.
+	side_contour corner_points[4];
+	m_sensor blocks[BLOCK_ZAHL]; // selber blocks. erste in mitte.
 
 public:
 
@@ -167,33 +190,50 @@ public:
 	void connect_contours(void)
 	{
 		ushort dist = 0;
+		const ushort hist_pegel = 100;
 
-		//HACK Kann man mit vorherigem zustand vergleichen
+		ushort current_contour = 0;
+		ushort current_point = 0;
+
+		//TODO Kann man mit vorherigem zustand vergleichen
 		cnt._contours.clear(); 
-
+		side_points[0].clear();
+		side_points[1].clear();
+		side_points[2].clear();
+		side_points[3].clear();
+		
+		// Anfang mit dem block 1 links.
 		color_histogram ch = blocks[1].get_histogramm();
 
 		cnt.new_contour(blocks[1].get_position(), ch);
+		// grenzpunkte aufbauen mit aktuellem kontour und aktuellem punkt
+		// grenze geht ueber sensor selber
+		side_points[0].push_back(side_contour{ current_contour, current_point });
 		
 		// vergleiche histogrammen von sensoren
+		// anfang fuer weiteren sensor
 		ushort i = 2;
 
+		//nach urzeigesinn
 		while (i < BLOCK_ZAHL)
 		{
 			ch = blocks[i-1].get_histogramm();
 
 			// mit naechstem sensor vergleichen
-
 			dist = ch.compare(blocks[i].get_histogramm());
 
-			if (dist < 50) 
+			if (dist < hist_pegel)
 			{
+				// wenn aenliche histogram
 				cnt.add_point(blocks[i].get_position());
+				corner_points[0] = side_contour{ current_contour, ++current_point };
 				//TODO mitteln histogram?
 			}
 			else
-			{
+			{	
+				// neues kontur anfangen
 				cnt.new_contour(blocks[i].get_position(), blocks[i].get_histogramm());
+				corner_points[0] = side_contour{ ++current_contour, current_point = 0 };
 			}
 
 			i++;
@@ -203,17 +243,19 @@ public:
 		ch = blocks[BLOCK_ZAHL - 1].get_histogramm();
 
 		// mit naechstem sensor vergleichen
-
 		dist = ch.compare(blocks[1].get_histogramm()); //HACK reihenfolge den Punkten beachten
 
-		if (dist < 50)
+		if (dist < hist_pegel)
 		{
+			//wenn gleiches histogramm, punkt zuweisen
 			cnt.add_point(blocks[1].get_position());
+			corner_points[0] = side_contour{ current_contour, ++current_point };
 			//TODO mitteln histogram?
 		}
 		else
 		{
 			cnt.new_contour(blocks[BLOCK_ZAHL - 1].get_position(), blocks[BLOCK_ZAHL - 1].get_histogramm());
+			corner_points[0] = side_contour{ ++current_contour, current_point = 0 };
 		}
 
 		// mittleres punkt mit allen konturen vergleichen
@@ -247,7 +289,7 @@ public:
 			cnt.new_contour(blocks[0].get_position(), ch);
 		}
 
-		cout << "block contours: " << cnt._contours.size() << endl;
+		cout  << "block contours: " << cnt._contours.size() << endl;
 		
 	}
 

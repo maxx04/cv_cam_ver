@@ -93,10 +93,10 @@ void color_histogram::reset()
 		histogram[i] = 0;
 	}
 
-	for (uint8_t i = 0; i < COLOR_HISTOGRAM_MAIN; i++)
-	{
-		main_clr[i].frequency = 0.0;
-	}
+	//for (uint8_t i = 0; i < COLOR_HISTOGRAM_MAIN; i++)
+	//{
+	//	main_clr[i].frequency = 0.0;
+	//}
 
 	//histogram.clear();
 }
@@ -176,5 +176,23 @@ void color_histogram::draw(Point start)
 
 	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
 	imshow("hist", plotResult);
+}
+
+Scalar color_histogram::get_max_color()
+{
+	int max = 0;
+	int position = 0;
+	Scalar main_color;
+	for (ushort i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
+	{
+		if (histogram[i] > max)
+		{
+			position = i;
+		}
+	}
+
+	RGB c =  HSVToRGB(base[position].color);
+
+	return main_color = Scalar(c.B, c.G, c.R);
 }
 

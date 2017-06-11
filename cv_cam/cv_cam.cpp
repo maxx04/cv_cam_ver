@@ -139,7 +139,7 @@ int main(int argc, const char * argv[])
 
 	s_set = sensor_set(frame0, 2800);
 
-	pyr.set_position(Point(500, 500));
+	pyr.set_position(Point(500, 400));
 
 	number_sensors = s_set.number_sensors;
 	

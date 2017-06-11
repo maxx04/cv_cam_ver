@@ -7,7 +7,7 @@
 
 class pyramide
 {
-
+	// set von den blocks
 	 block <block <m_sensor>> b1; //pyramide 2 mal tief
 
 
