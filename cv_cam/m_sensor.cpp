@@ -62,7 +62,7 @@ m_sensor::m_sensor(Point p, uint sz)
 
 
 }
-
+/// Konstruktor
 m_sensor::m_sensor()
 {
 	size = SENSOR_RADIUS * 2 + 2;
@@ -74,7 +74,11 @@ m_sensor::~m_sensor()
 
 }
 
-
+/// <summary> Befuellen vom Sensor aus dem Bild.   
+/// <param name="input"> Bild die verarbeitet wird. </param>
+/// <param name="pegel"> Schwelle die fuer Keypoints notwendig. </param>
+/// <returns> nichts </returns>
+/// </summary> 
 void m_sensor::query(const Mat * input, int pegel)
 {
 

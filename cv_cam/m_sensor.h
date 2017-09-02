@@ -6,6 +6,10 @@
 using namespace cv;
 using namespace std;
 
+// xml_returns_tag.cpp  
+// compile with: /LD /clr /doc  
+// post-build command: xdcmake xml_returns_tag.dll 
+
 
 #define SENSOR_RADIUS 11.0f
 #define SENSOR_ANGLE_STEP 6.0f
@@ -14,7 +18,7 @@ using namespace std;
 #define BIG_SECTOR 6
 
 
-
+/// Sensorklass
 class m_sensor
 {	
 
@@ -25,7 +29,6 @@ class m_sensor
 		PixelColor color;
 		//ushort distance;
 	};
-
 
 
 	Point pos;	// position Mitte

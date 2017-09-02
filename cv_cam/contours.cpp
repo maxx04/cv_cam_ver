@@ -30,7 +30,7 @@ void contours::add_point(Point p)
 	_contours[size]._cnt.push_back(p); //HACK letzte kontour ??
 }
 
-void contours::add_contour(contour_hist cnt)
+void contours::add_contour(contour_hist cnt) 
 {
 	_contours.push_back(cnt);
 }

@@ -21,8 +21,8 @@ class block
 
 public:
 
-	static ushort size; // block breite
-	contours cnt; //Konturen die werden erstellt aus vorhandenen bloecken.
+	static ushort size; //block breite
+	contours cnt; //Konturen im block
 
 	block()
 	{
@@ -95,8 +95,10 @@ public:
 
 		cnt._contours.clear();
 
+		// jedes block durchgehen
 		for (ushort i = 0; i < BLOCK_ZAHL; i++)
 		{
+			// von jedem block alle konturen in den block kopieren
 			for each (contour_hist ch in blocks[i].cnt._contours)
 			{
 				cnt.add_contour(ch);
@@ -144,6 +146,7 @@ class block <m_sensor> {
 	vector <side_contour> side_points[4];
 	// unten-links, oben links, oben rechts, unten rechts.
 	side_contour corner_points[4];
+
 	m_sensor blocks[BLOCK_ZAHL]; // selber blocks. erste in mitte.
 
 public:
