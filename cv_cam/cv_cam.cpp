@@ -137,7 +137,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 2800);
+	s_set = sensor_set(frame0, 800);
 
 	pyr.set_position(Point(500, 400));
 
