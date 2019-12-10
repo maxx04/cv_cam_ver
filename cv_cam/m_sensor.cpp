@@ -110,7 +110,7 @@ void m_sensor::query(const Mat * input, int pegel)
 		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM); //HACK Berechnungsmethode beachten!
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
-	//	search_sectors(Pixel1, pegel);
+		search_sectors(Pixel1, pegel);
 
 		Pixel0 = Pixel1;
 	}

@@ -1,2 +1,2 @@
-Microsoft Visual Studio 14 
-OpenCV 3.2
+Microsoft Visual Studio 19 
+OpenCV 4.1.2

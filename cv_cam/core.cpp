@@ -58,7 +58,7 @@ cv::Vec3b HSVtoBGR(const cv::Vec3f& hsv)
 	cv::Mat_<cv::Vec3f> hsvMat(hsv);
 	cv::Mat_<cv::Vec3f> bgrMat;
 
-	cv::cvtColor(hsvMat, bgrMat, CV_HSV2BGR);
+	cv::cvtColor(hsvMat, bgrMat,  cv::COLOR_HSV2BGR);
 
 	bgrMat *= 255; // Upscale after conversion
 
