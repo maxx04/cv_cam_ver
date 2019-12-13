@@ -305,7 +305,7 @@ public:
 	{
 		for (ushort i = 0; i < BLOCK_ZAHL; i++)
 		{
-			blocks[i].query(input, pegel);
+			blocks[i].proceed(input, pegel);
 		}
 
 		connect_contours();

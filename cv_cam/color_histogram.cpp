@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "color_histogram.h"
+#include <iostream>
+#include "plot.hpp"
 
 hst_hsv color_histogram::base[COLOR_HISTOGRAM_BREITE];
 bool color_histogram::base_defined = false;
@@ -49,7 +50,7 @@ color_histogram::color_histogram()
 					//m.color.x = b;
 					//m.color.y = b;
 					//m.color.z = b;
-					base[i++].color = RGBToHSV(RGB(b,b,b));
+					base[i++].color = RGBToHSV2(RGB(b,b,b));
 
 				}
 
@@ -101,6 +102,7 @@ void color_histogram::reset()
 	//histogram.clear();
 }
 
+// maximale distance ist zwischen 0,0,0 und 256, 256, 256 
 void color_histogram::add(PixelColor clr, ushort distance)
 {
 	//cv::compareHist();
@@ -115,7 +117,7 @@ void color_histogram::add(PixelColor clr, ushort distance)
 	short d = 1000;
 	short dst;
 
-	HSV hsv_color = ::RGBToHSV(RGB(clr.z, clr.y, clr.x));
+	HSV hsv_color = ::RGBToHSV2(RGB(clr.z, clr.y, clr.x));
 
 	int treff = 0;
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //TODO leistung schwach
@@ -149,7 +151,7 @@ void color_histogram::draw(Point start)
 	if (sz == 0)
 	{
 		//TODO Assert hinzufügen
-		cerr << "keine farben in Histogramm" << endl;
+		std::cerr << "keine farben in Histogramm" << std::endl;
 		return;
 	}
 
@@ -169,9 +171,9 @@ void color_histogram::draw(Point start)
 		//hst h = histogram[i];
 		base_RGB = HSVToRGB(base[i].color);
 		int hi = (int)((float)(histogram[i])/mag); //TODO mag == 0
-		cv::rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
-		cv::rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
-		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
+		rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
+		rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
+		//rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 
 	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);

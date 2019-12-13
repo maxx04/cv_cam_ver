@@ -1,4 +1,8 @@
 #pragma once
+#include "core.h"
+
+using namespace cv;
+
 class segment
 {
 public:

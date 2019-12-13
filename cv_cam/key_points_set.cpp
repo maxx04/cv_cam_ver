@@ -1,6 +1,9 @@
-#include "stdafx.h"
-#include "key_point_gradient.h"
 #include "key_points_set.h"
+#include "key_point_gradient.h"
+#include <opencv2/highgui.hpp>
+
+using namespace cv;
+using namespace std;
 
 int key_points_set::active_keypoint;
 int key_points_set::keypoints_number;
@@ -21,7 +24,7 @@ void key_points_set::redraw_keypoint_window(int /*arg*/, void*)
 {
 	keypoints_number = keypoints_vector.size();
 
-	cv:setTrackbarMax("Keypoint N", "keypoint", keypoints_number - 1);
+	setTrackbarMax("Keypoint N", "keypoint", keypoints_number - 1);
 
 	key_point_gradient m = keypoints_vector[active_keypoint];
 

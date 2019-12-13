@@ -1,5 +1,9 @@
 #pragma once
 #include "color_histogram.h"
+#include <vector>
+
+using namespace cv;
+using namespace std;
 
 struct contour_hist
 {

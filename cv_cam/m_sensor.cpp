@@ -1,30 +1,29 @@
-#include "stdafx.h"
-
 #include "m_sensor.h"
+#include "plot.hpp"
 
+/* Statische Klassenvariable */
 
 uint m_sensor::index[POINTS_IN_CIRCLE];
 int8_t m_sensor::dx[POINTS_IN_CIRCLE];
 int8_t m_sensor::dy[POINTS_IN_CIRCLE];
 short m_sensor::smooth_index[9];
-
 uint m_sensor::sensors_number = 0;
-
 Mat m_sensor::out;
-
 
 m_sensor::m_sensor(Point p, uint sz)
 {
-	assert(sz > 12 && sz < 120); // muss groesser sein um linie zu finden
+	assert(sz > 12 && sz < 120); // test auf Groesse
+	assert(sz % 2 == 0); // test auf gerade Zahl
 
 	pos = p;
+
 	size = sz;
 
 	sectors_nmb = 0;
 
 	key_points = vector<Point>(10);
 
-	float radius = SENSOR_RADIUS;
+	float radius = size / 2 - 1; // SENSOR_RADIUS;
 
 	sensors_number++;
 
@@ -37,12 +36,12 @@ m_sensor::m_sensor(Point p, uint sz)
 
 		for (ushort number = 0; number < POINTS_IN_CIRCLE; number++)
 		{
-			dx[number] = (int8_t)(radius * cos(3.1415f * da / 180.0f)); //HACK genauigkeit erhoehen pi double
+			dx[number] = (int8_t)(radius * cos(3.1415f * da / 180.0f)); // HACK Genauigkeit erhoehen pi double
 			dy[number] = (int8_t)(radius * sin(3.1415f * da / 180.0f));
 
 			int offset = (size + 1) * (size / 2); //sensor mitte
 
-			index[number] = (dy[number] * size + dx[number] + offset); //HACK von Pixellaenge abhaengig
+			index[number] = (dy[number] * size + dx[number] + offset); // HACK von Pixellaenge abhaengig
 
 			da += SENSOR_ANGLE_STEP;
 		}
@@ -54,7 +53,7 @@ m_sensor::m_sensor(Point p, uint sz)
 		smooth_index[3] = size - 1;
 		smooth_index[4] = - 1;
 		smooth_index[5] = -1 - size;
-		smooth_index[6] = -size; //sehe warnungen am compiler
+		smooth_index[6] = -size; 
 		smooth_index[7] = -size + 1;
 		smooth_index[8] = 0;
 
@@ -62,38 +61,32 @@ m_sensor::m_sensor(Point p, uint sz)
 
 
 }
-/// Konstruktor
+// Konstruktor
 m_sensor::m_sensor()
 {
-	size = SENSOR_RADIUS * 2 + 2;
-	m_sensor(Point(0, 0), size);
+	m_sensor(Point(0, 0), 24);
 }
-
+// Destruktor
 m_sensor::~m_sensor()
 {
 
 }
 
-/// <summary> Befuellen vom Sensor aus dem Bild.   
-/// <param name="input"> Bild die verarbeitet wird. </param>
-/// <param name="pegel"> Schwelle die fuer Keypoints notwendig. </param>
-/// <returns> nichts </returns>
-/// </summary> 
-void m_sensor::query(const Mat * input, int pegel)
+
+void m_sensor::proceed(const Mat * input, int pegel)
 {
 
-	//kopieren teil vom bild
+	// kopieren teil vom bild
 	Rect roi(pos.x, pos.y, size, size);
 	(*input)(roi).copyTo(out);
 
+	// erste Pixel Adresse abfragen
 	PixelColor* pixelPtr = (PixelColor*)out.data; 
 
 	PixelColor Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
 	PixelColor Pixel1, color;
 
-	//sectors_nmb = 0; //start fuer find sectors
-
-	//search_sectors(Pixel0, pegel);
+	sectors_nmb = 0; // Sektorenanzahl löschen
 
 	color = PixelColor(0, 0, 0);
 
@@ -107,7 +100,9 @@ void m_sensor::query(const Mat * input, int pegel)
 		//aufbauen histogramm
 		clr_hst.add(Pixel1, 20);
 
-		values[i] = color_distance(Pixel0, Pixel1, RGB_3SUM); //HACK Berechnungsmethode beachten!
+		//HACK Berechnungsmethode beachten!
+
+		values[i] = color_distance(Pixel0, Pixel1, color_distance_enum::RGB_3SUM); 
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
 		search_sectors(Pixel1, pegel);
@@ -115,7 +110,7 @@ void m_sensor::query(const Mat * input, int pegel)
 		Pixel0 = Pixel1;
 	}
 
-	//search_sectors(&out, pegel, RGB_3SUM); //nicht produktiv
+	//search_sectors(&out, pegel, RGB_3SUM); //OPTI nicht produktiv
 
 	search_keypoints(values, pegel);
 
@@ -126,6 +121,7 @@ void m_sensor::query(const Mat * input, int pegel)
 void m_sensor::search_keypoints(short* values, int pegel)
 {
 	//HACK values sollen schon vorbereitet sein
+	//assert(&values[0] == 0);
 
 	// Glaetten 2 mal!
 	smooth_values(3);
@@ -190,15 +186,7 @@ void m_sensor::search_sectors(PixelColor next_pixel, int pegel)
 {
 	//HACK bei auswertung vergleich end ring - startring beachten
 
-	//assert(sectors_nmb < MAX_SECTORS);
-
 	if (sectors_nmb >= MAX_SECTORS)	return;
-
-	//if (sectors_nmb = MAX_SECTORS)
-	//{
-	//	//distance berechnen
-	//	return;
-	//}
 
 	// start wenn:
 	if (sectors_nmb == 0)
@@ -320,6 +308,7 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_e
 	}
 }
 
+/* Gibt Position */
 Point m_sensor::get_position()
 {
 	return pos;
@@ -377,27 +366,6 @@ void m_sensor::smooth_values(uint8_t range)
 
 }
 
-void m_sensor::show(const Mat * input, uint magnify)
-{
-
-	CV_Assert((*input).type() == out.type());
-
-	Rect roi(pos.x, pos.y, size, size);
-
-	(*input)(roi).copyTo(out);
-
-	Mat out10x(size * magnify, size * magnify, out.type());
-
-	soi(&out, &out10x, magnify);
-
-	cout << key_points.size() << endl;
-
-	for each (Point p in key_points)
-		rectangle(out10x, Rect(p.x*magnify, p.y*magnify, magnify, magnify), Scalar(255));
-
-	imshow("magnify", out);
-}
-
 void m_sensor::show(const Mat * input, const String fenster)
 {
 
@@ -413,9 +381,8 @@ void m_sensor::show(const Mat * input, const String fenster)
 
 	//clr_hst.draw_base();
 
-	cout << "keypoints: " << key_points.size() << " - nighbors: " << nighbors.size();
-	cout << " sectors: " << (uint)sectors_nmb << endl;
-	cout << " >  R   G   B  - start - end" << endl;
+	cout << "keypoints: " << key_points.size(); // << " - nighbors: " << nighbors.size();
+	cout << "sectors: " << (uint)sectors_nmb << endl;
 
 	//line segments
 
@@ -506,35 +473,34 @@ void m_sensor::add_points(vector<Point> * global_points)
 	}
 }
 
-void m_sensor::soi(const Mat* src, Mat* dst, uint magnify)
+//void m_sensor::soi(const Mat* src, Mat* dst, uint magnify)
+//{
+//	CV_Assert((*src).depth() == CV_8U && (*dst).depth() == CV_8U);  // accept only uchar images
+//
+//	for (uint16_t i = 0; i < src->cols; i++)
+//		for (uint16_t j = 0; j < src->rows; j++)
+//			for (uint16_t ik = 0; ik < magnify; ik++)
+//				for (uint16_t jk = 0; jk < magnify; jk++)
+//				{
+//					dst->at<uint8_t>(i * magnify + ik, j * magnify + jk) = src->at<uint8_t>(i, j);
+//					//cout << i * 10 + ik << "," << j * 10 + jk << endl;
+//				}
+//
+//
+//}
+
+bool m_sensor::intersection(Point mp) 
 {
-	CV_Assert((*src).depth() == CV_8U && (*dst).depth() == CV_8U);  // accept only uchar images
-
-	for (uint16_t i = 0; i < src->cols; i++)
-		for (uint16_t j = 0; j < src->rows; j++)
-			for (uint16_t ik = 0; ik < magnify; ik++)
-				for (uint16_t jk = 0; jk < magnify; jk++)
-				{
-					dst->at<uint8_t>(i * magnify + ik, j * magnify + jk) = src->at<uint8_t>(i, j);
-					//cout << i * 10 + ik << "," << j * 10 + jk << endl;
-				}
-
-
-}
-
-bool m_sensor::cross(Point mp) //HACK Size beruecksichtigen, auf Rect aendern
-{
-	int s = (int)size;
 
 	if (mp.x < pos.x) return false;
-	if (mp.x > pos.x + s) return false;
+	if (mp.x > pos.x + (int)size) return false;
 	if (mp.y < pos.y) return false;
-	if (mp.y > pos.y + s) return false;
+	if (mp.y > pos.y + (int)size) return false;
 
 	return true;
 }
 
-bool m_sensor::cross(m_sensor* m) 
+bool m_sensor::intersection(m_sensor* m) 
 {
 	int s = (int)size;
 	int sm = (int) m->size;
@@ -595,39 +561,21 @@ void m_sensor::add_line_segments()
 	//}
 }
 
-bool m_sensor::connect_sectors(Sector S1, Sector S2, list<Sector>* ls)
-{
-	Sector S;
-
-	if (color_distance(S1.color, S2.color, RGB_SUM_EACH_COLOR) < 6)
-	{
-		S.start = S1.start;
-		S.end = S2.end;
-		S.color = middle_color(S1.color, S2.color);
-		ls->push_back(S);
-		return true;
-	}
-
-	ls->push_back(S1);
-	ls->push_back(S2);
-	return false;
-}
-
-void m_sensor::create_sectors_array(const Mat* out_ready, list<Sector>* output_list)
-{
-	//HACK out soll vorbereited sein
-	PixelColor* pixelPtr = (PixelColor*)(out_ready->data);
-	Sector s;
-	PixelColor p;
-	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
-	{
-		p = *(pixelPtr + index[i]);
-		s.start = i;
-		s.end = i;
-		s.color = p;
-		output_list->push_back(s);
-	}
-}
+//void m_sensor::create_sectors_array(const Mat* out_ready, list<Sector>* output_list)
+//{
+//	//HACK out soll vorbereited sein
+//	PixelColor* pixelPtr = (PixelColor*)(out_ready->data);
+//	Sector s;
+//	PixelColor p;
+//	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
+//	{
+//		p = *(pixelPtr + index[i]);
+//		s.start = i;
+//		s.end = i;
+//		s.color = p;
+//		output_list->push_back(s);
+//	}
+//}
 
 void m_sensor::create_sectors_array(const Mat* out_ready, Sector* sv)
 {

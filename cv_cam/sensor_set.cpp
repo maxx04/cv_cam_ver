@@ -1,14 +1,14 @@
-#include "stdafx.h"
 #include "key_points_set.h"
 #include "key_point_gradient.h"
 #include "sensor_set.h"
+#include <random>
 
 extern class key_points_set;
 
 sensor_set::sensor_set(Mat frame0, int ns)
 {
 
-	const int sensor_size = SENSOR_RADIUS*2+2;
+	const int sensor_size = 24;
 	number_sensors = ns;
 
 	default_random_engine generator;
@@ -31,16 +31,16 @@ sensor_set::sensor_set(Mat frame0, int ns)
 
 		cout << m << "\r";
 
-		for (int mn = 0; mn < sensors_number; mn++)
-		{
+		//for (int mn = 0; mn < sensors_number; mn++)
+		//{
 
-			if (sensors[mn].cross(mi) && mn != m)
-			{
-				mi->nighbors.push_back(mn); // HACK Achtung bei vectoraenderung numerrierung wird geaendert
+		//	if (sensors[mn].intersection(mi) && mn != m)
+		//	{
+		//		mi->nighbors.push_back(mn); // HACK Achtung bei vectoraenderung numerrierung wird geaendert
 
-				 //cout << m << " - " << mn.get_position() << " / "; 
-			}
-		}
+		//		 //cout << m << " - " << mn.get_position() << " / "; 
+		//	}
+		//}
 
 	
 		//cout << mi.nighbors.size() << endl;
@@ -94,10 +94,10 @@ void sensor_set::magnify_selected_sensor(const Mat * input_image, const String m
 	m.show(input_image, magnifyed_view_window);
 }
 
-void sensor_set::query_sensors(const Mat * block_1, int pegel)
+void sensor_set::proceed(const Mat * block_1, int pegel)
 {
 	for (int m = 0; m < sensors.size(); m++) 
-		sensors[m].query(block_1, pegel);
+		sensors[m].proceed(block_1, pegel);
 }
 
 void sensor_set::add_keypoints(key_points_set* key_points, Mat* block_1)
@@ -127,15 +127,15 @@ void sensor_set::show_keypoints(Mat* output_frame)
 	PixelColor color = { 0,0,255 };
 
 	for each  (m_sensor m in sensors)
-	{
-		Point p1 = m.get_position();
+	{  //TODO realisieren in m_sensor
+		//Point p1 = m.get_position();
 
-		for each(Point pnt in m.key_points)
-		{
-			  //cv::drawMarker(*output_frame, m.get_position() + pnt, Scalar(0, 0, 255), MARKER_CROSS,1);
-			  //(*output_frame).at<PixelColor>(p1.y + pnt.y, p1.x + pnt.x) = color;
-			  (*output_frame).at<PixelColor>(p1 + pnt) = color;
-		}
+		//for each(Point pnt in m.key_points)
+		//{
+		//	  //cv::drawMarker(*output_frame, m.get_position() + pnt, Scalar(0, 0, 255), MARKER_CROSS,1);
+		//	  //(*output_frame).at<PixelColor>(p1.y + pnt.y, p1.x + pnt.x) = color;
+		//	  (*output_frame).at<PixelColor>(p1 + pnt) = color;
+		//}
 	}
 }
 
@@ -146,12 +146,14 @@ void sensor_set::show_line_segments(Mat* output_frame)
 
 	for each  (m_sensor m in sensors)
 	{
-		Point p1 = m.get_position();
+		//TODO realisieren in m_sensor
+
+		/*Point p1 = m.get_position();
 
 		for each(segment segm in m.line_segments)
 		{
 			line((*output_frame), p1 + segm.P1, p1 + segm.P2, c);
-		}
+		}*/
 	}
 }
 
@@ -162,13 +164,15 @@ void sensor_set::show_flats(Mat* output_frame)
 
 	for each  (m_sensor m in sensors)
 	{
-		if (m.key_points.size() == 0)
-		{
-			Point p1 = m.get_position()+Point(sz);
+		//TODO realisieren in m_sensor
 
-			//rectangle((*output_frame), Rect(p1.x, p1.y, 12, 12), Scalar(m.color.x, m.color.y, m.color.z));
-			//circle((*output_frame), p1, 6, Scalar(m.color.x, m.color.y, m.color.z),-1);
-		}
+		//if (m.key_points.size() == 0)
+		//{
+		//	Point p1 = m.get_position()+Point(sz);
+
+		//	//rectangle((*output_frame), Rect(p1.x, p1.y, 12, 12), Scalar(m.color.x, m.color.y, m.color.z));
+		//	//circle((*output_frame), p1, 6, Scalar(m.color.x, m.color.y, m.color.z),-1);
+		//}
 
 	}
 }
@@ -179,7 +183,7 @@ ushort sensor_set::find_sensor(int x, int y)
 	int dist_min = 100000;
 	Point mou(x, y);
 	for (int m = 0; m < number_sensors ; m++)
-		if (sensors[m].cross(mou))
+		if (sensors[m].intersection(mou))
 		{
 			ushort d = sensors[m].get_distance_to_middle(x, y);
 			if (dist_min > d )

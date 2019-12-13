@@ -1,30 +1,25 @@
-// cv_cam.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
 #include "cv_cam.h"
 #include "m_sensor.h"
 #include "sensor_set.h"
 #include "key_points_set.h"
 #include "contours.h"
-#include "pyramide.h"
-
+#include "pyramide.h"					   
 
 
 using namespace cv;
 using namespace std;
 
 int sensor_nr = 0;
-int pegel = 25;
+int pegel = 15;
 int number_sensors;
 
 Mat frame0, frame1, fg0, fg1;
 
-pyramide pyr;
+//pyramide pyr;
 
 sensor_set s_set;
 key_points_set k_set; // global
-contours cnt;
+//contours cnt;
 
 static void help()
 {
@@ -61,7 +56,7 @@ static void redraw_all(int /*arg*/, void*)
 	s_set.show_line_segments(&tmp);
 
 
-	pyr.draw_contours(&tmp);
+	//pyr.draw_contours(&tmp);
 
 	//zeige bild
 	imshow("points", tmp);
@@ -76,7 +71,7 @@ static void redraw_all(int /*arg*/, void*)
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set.query_sensors(&frame1, pegel); // berechne sensoren neu
+	s_set.proceed(&frame1, pegel); // berechne sensoren neu
 	s_set.add_keypoints(&k_set, &frame1); // ausleite sensoren neu
 	redraw_all(0, 0);
 }
@@ -105,10 +100,10 @@ static void onMouse_color(int event, int x, int y, int, void*)
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(a.z, a.y, a.x);
 
-		hsv = RGBToHSV(rgb);
+		hsv = RGBToHSV2(rgb);
 
 		cout << format("%02d-%02d", x, y);
-		cout << format(" G:%3d B:%3d R:%3d", a.x, a.y, a.z);
+		cout << format(" B:%3d G:%3d R:%3d", a.x, a.y, a.z);
 		cout << format("--H:%.0f S:%.2f V:%.2f", hsv.H, hsv.S, hsv.V) << endl;
 
 
@@ -137,9 +132,9 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 800);
-
-	pyr.set_position(Point(500, 400));
+	s_set = sensor_set(frame0, 1800);
+									    
+	//pyr.set_position(Point(500, 400));
 
 	number_sensors = s_set.number_sensors;
 	
@@ -204,9 +199,9 @@ int main(int argc, const char * argv[])
 
 // --------------------------------------------------------------------------------
 //	finde keypoints, histogramms
-		s_set.query_sensors(&frame1, pegel);
+		s_set.proceed(&frame1, pegel);
 
-		pyr.query(&frame1, pegel);
+		//pyr.query(&frame1, pegel);
 
 
 //	finde konturen, bereiche mit gleichen histogrammen
@@ -225,7 +220,7 @@ int main(int argc, const char * argv[])
 
 		waitKey();
 
-		fg1.copyTo(fg0);
+		//fg1.copyTo(fg0);
 
 	}
 

@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "contours.h"
+#include <opencv2\imgproc.hpp>
 
 
 contours::contours()
