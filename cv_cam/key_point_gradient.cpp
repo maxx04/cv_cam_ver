@@ -1,6 +1,6 @@
-#include "stdafx.h"
 #include "key_point_gradient.h"
-
+#include "core.h"
+#include <opencv2\highgui.hpp>
 
 uint key_point_gradient::index[KP_POINTS_IN_CIRCLE];
 int8_t key_point_gradient::dx[KP_POINTS_IN_CIRCLE];
@@ -40,7 +40,7 @@ key_point_gradient::key_point_gradient()
 }
 
 
-void key_point_gradient::show(const Mat * input, const String fenster)
+void key_point_gradient::draw_magnifyied(const Mat * input, const String fenster)
 {
 
 	//CV_Assert((*input).type() == out.type());

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "plot.hpp"
 
 /*M///////////////////////////////////////////////////////////////////////////////////////
@@ -409,7 +408,7 @@ namespace cv
 				char AxisX_Min_Text[20];
 				double TextSize = 1;
 
-				sprintf(AxisX_Min_Text, "%g", Value);
+				sprintf_s(AxisX_Min_Text, "%g", Value);
 				Point AxisX_Min_Loc;
 				AxisX_Min_Loc.x = Xloc + XMargin;
 				AxisX_Min_Loc.y = Yloc + YMargin;
@@ -422,7 +421,7 @@ namespace cv
 				char AxisX_Min_Text[20];
 				int TextSize = 1;
 
-				sprintf(AxisX_Min_Text, Text, Value);
+				sprintf_s(AxisX_Min_Text, Text, Value);
 				Point AxisX_Min_Loc;
 				AxisX_Min_Loc.x = Xloc + XMargin;
 				AxisX_Min_Loc.y = Yloc + YMargin;

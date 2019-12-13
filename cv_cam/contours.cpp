@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "contours.h"
+#include <opencv2\imgproc.hpp>
 
 
 contours::contours()
@@ -42,7 +42,7 @@ void contours::draw_contour(const Mat* frame)
 
 		Point pa = c._cnt[0];
 
-		Scalar color = c.histogram.get_max_color(); 
+		Scalar color = c.histogram.get_mean_color(); 
 		//Scalar(rand() & 255, rand() & 255, rand() & 255);
 
 		for each (Point p in c._cnt)

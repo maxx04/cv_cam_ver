@@ -1,4 +1,5 @@
 #pragma once
+#include <opencv2/core.hpp>
 
 using namespace cv;
 using namespace std;
@@ -11,7 +12,7 @@ using namespace std;
 class key_point_gradient
 {
 public:
-	void show(const Mat * input, const String fenster);
+	void draw_magnifyied(const Mat * input, const String fenster);
 	key_point_gradient(Point p);
 	key_point_gradient();
 	~key_point_gradient();

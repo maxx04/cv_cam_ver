@@ -1,5 +1,6 @@
-#include "stdafx.h"
 #include "core.h"
+//#include <random>
+#include "opencv2/imgproc.hpp"
 
 
 core::core()
@@ -27,11 +28,11 @@ short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
 		return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);
 
 	case RGB_MAX_EACH_COLOR:
-		m = max(abs(Pixel0.x - Pixel1.x), abs(Pixel0.z - Pixel1.z));
-		return max(abs(Pixel0.x - Pixel1.x), m);
+		m = std::max(abs(Pixel0.x - Pixel1.x), abs(Pixel0.z - Pixel1.z));
+		return std::max(abs(Pixel0.x - Pixel1.x), m);
 
 	case HSV_HV:
-		return 2*(Pixel0.x - Pixel1.x) + (Pixel0.y - Pixel1.y);
+		return 2 * (Pixel0.x - Pixel1.x) + (Pixel0.y - Pixel1.y);
 
 	default:
 		return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);
@@ -58,7 +59,7 @@ cv::Vec3b HSVtoBGR(const cv::Vec3f& hsv)
 	cv::Mat_<cv::Vec3f> hsvMat(hsv);
 	cv::Mat_<cv::Vec3f> bgrMat;
 
-	cv::cvtColor(hsvMat, bgrMat,  cv::COLOR_HSV2BGR);
+	cv::cvtColor(hsvMat, bgrMat, cv::COLOR_HSV2BGR);
 
 	bgrMat *= 255; // Upscale after conversion
 
@@ -66,7 +67,7 @@ cv::Vec3b HSVtoBGR(const cv::Vec3f& hsv)
 	return bgrMat(0);
 }
 
- RGB HSVToRGB(HSV hsv) 
+RGB HSVToRGB(HSV hsv)
 {
 	double r = 0, g = 0, b = 0;
 
@@ -137,52 +138,87 @@ cv::Vec3b HSVtoBGR(const cv::Vec3f& hsv)
 	return RGB((unsigned char)(r * 255), (unsigned char)(g * 255), (unsigned char)(b * 255));
 }
 
- static double Min(double a, double b) {
-	 return a <= b ? a : b;
- }
+static double Min(double a, double b) {
+	return a <= b ? a : b;
+}
 
- static double Max(double a, double b) {
-	 return a >= b ? a : b;
- }
+static double Max(double a, double b) {
+	return a >= b ? a : b;
+}
 
- HSV RGBToHSV(RGB rgb) {
-	 double delta, min;
-	 double h = 0, s, v;
+HSV RGBToHSV(RGB rgb) {
+	double delta, min;
+	double h = 0, s, v;
 
-	 min = Min(Min(rgb.R, rgb.G), rgb.B);
-	 v = Max(Max(rgb.R, rgb.G), rgb.B);
-	 delta = v - min;
+	min = Min(Min(rgb.R, rgb.G), rgb.B);
+	v = Max(Max(rgb.R, rgb.G), rgb.B);
+	delta = v - min;
 
-	 if (v == 0.0)
-		 s = 0;
-	 else
-		 s = delta / v;
+	if (v == 0.0)
+		s = 0;
+	else
+		s = delta / v;
 
-	 if (s == 0)
-		 h = 0.0;
+	if (s == 0)
+		h = 0.0;
 
-	 else
-	 {
-		 if (rgb.R == v)
-			 h = (rgb.G - rgb.B) / delta;
-		 else if (rgb.G == v)
-			 h = 2 + (rgb.B - rgb.R) / delta;
-		 else if (rgb.B == v)
-			 h = 4 + (rgb.R - rgb.G) / delta;
+	else
+	{
+		if (rgb.R == v)
+			h = (rgb.G - rgb.B) / delta;
+		else if (rgb.G == v)
+			h = 2 + (rgb.B - rgb.R) / delta;
+		else if (rgb.B == v)
+			h = 4 + (rgb.R - rgb.G) / delta;
 
-		 h *= 60;
+		h *= 60;
 
-		 if (h < 0.0)
-			 h = h + 360;
-	 }
+		if (h < 0.0)
+			h = h + 360;
+	}
 
-	 return HSV(h, s, (v / 255));
- }
+	return HSV(h, s, (v / 255));
+}
 
- short hsv_distance(HSV color1, HSV color2)
- {
-	 if (color1.S < 0.2 || color1.S > 0.8)
-		 return abs(color1.V - color2.V) * 360;
-	 else
-	 return abs(color1.H-color2.H);
- }
+short hsv_distance(HSV color1, HSV color2)
+{
+	//TODO graue Farben richtig einklassifi
+
+	if (color1.S < 0.1)	return abs(color1.V - color2.V) * 360;
+
+	if (color1.V == 1 && color1.S > 0.1) 
+		return abs(color1.V - color2.V) * 360;
+	else
+		return abs(color1.H - color2.H);
+}
+
+/* 
+Input 0 <= B <= 255, 0 <= G <= 255, 0 <= R <= 255
+Output 0 <= H <= 360, 0 <= S <= 1, 0 <= V <= 1  
+*/
+HSV RGBToHSV2(const RGB rgb)
+{
+	//OPTI optimieren
+
+	cv::Vec3b bgr;
+	HSV hsv_out;
+
+	bgr[0] = rgb.B;
+	bgr[1] = rgb.G;
+	bgr[2] = rgb.R;
+
+	cv::Mat3f bgrMat(static_cast<cv::Vec3f>(bgr));
+
+	bgrMat *= 1. / 255.;
+
+	cv::Mat3f hsvMat;
+	cv::cvtColor(bgrMat, hsvMat, cv::COLOR_BGR2HSV);
+
+	cv::Vec3f hsv = hsvMat(0, 0);
+
+	hsv_out.H = hsv[0];
+	hsv_out.S = hsv[1];
+	hsv_out.V = hsv[2];
+
+	return hsv_out;
+}

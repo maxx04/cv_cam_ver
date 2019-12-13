@@ -1,6 +1,7 @@
 #pragma once
+#include "opencv2/core.hpp"
 
-typedef cv::Point3_<uint8_t> PixelColor;
+typedef cv::Point3_<uint8_t> PixelColor; /* Farbe in HSV raum */
 
 const enum color_distance_enum {
 	RGB_DISTANCE = 0,
@@ -75,7 +76,8 @@ public:
 	}
 };
 
- RGB HSVToRGB(HSV hsv);
- HSV RGBToHSV(RGB rgb);
+RGB HSVToRGB(HSV hsv);
+HSV RGBToHSV(RGB rgb);
+HSV RGBToHSV2(RGB rgb);
 
  short hsv_distance(HSV hsv_color1, HSV color2);

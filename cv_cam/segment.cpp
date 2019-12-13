@@ -1,7 +1,4 @@
-#include "stdafx.h"
 #include "segment.h"
-
-
 
 segment::segment()
 {

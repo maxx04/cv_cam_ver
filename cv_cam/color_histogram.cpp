@@ -1,62 +1,44 @@
-#include "stdafx.h"
 #include "color_histogram.h"
+#include <iostream>
+#include "plot.hpp"
 
 hst_hsv color_histogram::base[COLOR_HISTOGRAM_BREITE];
 bool color_histogram::base_defined = false;
 
 color_histogram::color_histogram()
 {
+	CV_Assert(COLOR_HISTOGRAM_BREITE <= 256);
+	CV_Assert(COLOR_HISTOGRAM_COLORS % 8 == 0);	
+	CV_Assert(COLOR_HISTOGRAM_GRAYS % 8 == 0);
+
 	if (!base_defined)
 	{
-		//berechnen HSV verteilung und dann konvertieren in RGB
-		hst m;
 		int i = 0;
-		double h = 0.0;
-		double s = 0.5;
-		double v = 0.5;
-		double schritt = 360.0/double(COLOR_HISTOGRAM_COLORS);
 
-		HSV hsv(0.0, 0.0, 0.0);
-		RGB rgb(0.0, 0.0, 0.0);
+		double schritt = 360.0 / double(COLOR_HISTOGRAM_COLORS);
 
-		for (h = 0; h < 360; h += schritt)
-			//for (s = 0.25; s <= 0.75; s += 0.25)
-			//	for (v = 0.45; v <= 0.75; v += 0.15)
+		HSV hsv(0.0, 0.7, 0.5);	// TODO S und V ermitteln  für beste Ergebnisse oder Egal?
 
+		for (double h = 0; h < 360; h += schritt)
 		{
-
 			hsv.H = h;
-			hsv.S = s;
-			hsv.V = v;
-
-			//rgb = ::HSVToRGB(hsv);
-
-			//base[i].color.x = rgb.R;
-			//base[i].color.y = rgb.G;
-			//base[i].color.z = rgb.B;
-
 			base[i].color = hsv;
 			i++;
-
 		}
 
-
 		//Grauwerte
-		for (ushort b = 0; b < 256; b += 256/COLOR_HISTOGRAM_GRAYS)
-				{
+		unsigned char b = 0;
 
-					//m.treffer = 1;
-					//m.color.x = b;
-					//m.color.y = b;
-					//m.color.z = b;
-					base[i++].color = RGBToHSV(RGB(b,b,b));
-
-				}
-
-
+		for (i = COLOR_HISTOGRAM_COLORS; i < COLOR_HISTOGRAM_BREITE; i++ )
+		{
+			base[i].color = RGBToHSV2(RGB(b, b, b));
+			b += (256 / COLOR_HISTOGRAM_GRAYS);
+		}
 
 		base_defined = true;
 	}
+
+	reset();
 }
 
 
@@ -71,19 +53,24 @@ ushort color_histogram::compare(color_histogram* h)
 	ushort sum = 0;
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
 	{
-		sum += abs(histogram[i] - h->histogram[i]);
+		sum += abs(histogram[i] - h->get_frequency(i));
 	}
 	return sum;
 }
 
 ushort color_histogram::compare(color_histogram h)
 {
-		ushort sum = 0;
+	ushort sum = 0;
 	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
 	{
-		sum += abs(histogram[i] - h.histogram[i]);
+		sum += abs(histogram[i] - h.get_frequency(i));
 	}
 	return sum;
+}
+
+inline uint8_t color_histogram::get_frequency(int i)
+{
+	return histogram[i] ? (i > 0 && i < COLOR_HISTOGRAM_BREITE) : 0;
 }
 
 void color_histogram::reset()
@@ -92,39 +79,27 @@ void color_histogram::reset()
 	{
 		histogram[i] = 0;
 	}
-
-	//for (uint8_t i = 0; i < COLOR_HISTOGRAM_MAIN; i++)
-	//{
-	//	main_clr[i].frequency = 0.0;
-	//}
-
-	//histogram.clear();
 }
 
-void color_histogram::add(PixelColor clr, ushort distance)
-{
-	//cv::compareHist();
-	// maximale distance ist zwischen 0,0,0 und 256, 256, 256 
-	// dann geteilt auf anzahl vorhandenen segmenten
-	// oder alles ablegen mit kleinstem abstand dann rausnehmen wichtigste die kommen raus
-	// parallelism
 
+void color_histogram::add(PixelColor clr)
+{
 	// gehen durch alle positionen vom histogramm
 	//und finde minimale abstand
 
-	short d = 1000;
+	short d = 10000;
 	short dst;
 
-	HSV hsv_color = ::RGBToHSV(RGB(clr.z, clr.y, clr.x));
+	HSV hsv_color = ::RGBToHSV2(RGB(clr.z, clr.y, clr.x));
 
 	int treff = 0;
-	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //TODO leistung schwach
+	for (uint8_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++) //OPTI leistung schwach
 	{
 		// ablegen in naechst naehres
 		//dst = abs(color_distance(clr, base[i].color, RGB_SUM_EACH_COLOR));
 		dst = hsv_distance(hsv_color, base[i].color);
 
-		if(dst < d)
+		if (dst < d)
 		{
 			treff = i;
 			d = dst;
@@ -132,24 +107,27 @@ void color_histogram::add(PixelColor clr, ushort distance)
 
 	}
 
-	histogram[treff]++; //erhoehe treffer
+	if (histogram[treff] == 256)  // HACK
+		cerr << "Histogram Treffanzahl mehr als 256 " << endl;
+	else
+		histogram[treff]++; //erhoehe treffer
 }
 
 void color_histogram::draw(Point start)
 {
-	Mat plotResult; 
-	const int width = 1600;
-	const int high = 120;
-	const int base_high = 20; //base Histogramm
-	plotResult.create(high+ base_high, width, CV_8UC3); //TODO Leisungsverlust.
-	
+	Mat plotResult;
+	const int width = 10 * COLOR_HISTOGRAM_BREITE;
+	const int high = 100;
+	const int base_high = 10; //base Histogramm
+	plotResult.create(high + base_high, width, CV_8UC3); //TODO Leisungsverlust.
+
 	plotResult.setTo(Scalar(127, 127, 127));
 	int sz = COLOR_HISTOGRAM_BREITE;
 
 	if (sz == 0)
 	{
 		//TODO Assert hinzufügen
-		cerr << "keine farben in Histogramm" << endl;
+		std::cerr << "keine farben in Histogramm" << std::endl;
 		return;
 	}
 
@@ -162,23 +140,23 @@ void color_histogram::draw(Point start)
 
 	int step = width / sz;
 	float mag = (float)max / (float)high;
-	RGB base_RGB(0,0,0);
+	RGB base_RGB(0, 0, 0);
 
 	for (int i = 0; i < sz; i++)
 	{
 		//hst h = histogram[i];
 		base_RGB = HSVToRGB(base[i].color);
-		int hi = (int)((float)(histogram[i])/mag); //TODO mag == 0
-		cv::rectangle(plotResult, Rect(i*step, high-hi, step, high) , Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
-		cv::rectangle(plotResult, Rect(i*step, high, step, base_high+ high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
-		//cv::rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
+		int hi = (int)((float)(histogram[i]) / mag); //TODO mag == 0
+		rectangle(plotResult, Rect(i * step, high - hi, step, high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
+		rectangle(plotResult, Rect(i * step, high, step, base_high + high), Scalar(base_RGB.B, base_RGB.G, base_RGB.R), -1);
+		//rectangle(plotResult, Rect(i*step, 0, step, 100), Scalar((double)(16 * i), 256, 256), -1);
 	}
 
 	//cvtColor(plotResult, plotResult, COLOR_HSV2BGR);
 	imshow("hist", plotResult);
 }
 
-Scalar color_histogram::get_max_color()
+Scalar color_histogram::get_mean_color()
 {
 	int max = 0;
 	int position = 0;
@@ -191,7 +169,7 @@ Scalar color_histogram::get_max_color()
 		}
 	}
 
-	RGB c =  HSVToRGB(base[position].color);
+	RGB c = HSVToRGB(base[position].color);
 
 	return main_color = Scalar(c.B, c.G, c.R);
 }
