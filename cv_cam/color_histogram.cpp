@@ -174,3 +174,19 @@ Scalar color_histogram::get_mean_color()
 	return main_color = Scalar(c.B, c.G, c.R);
 }
 
+// TODO graue und Dunkle Farben richtig einklassifizieren
+short color_histogram::hsv_distance(HSV color1, HSV color2)
+{
+	// OPTI Kriterien untersuchen
+	//if (color1.S < 0.2 || color1.V < 0.05)	return abs(color1.V - color2.V)*100;
+	if (color1.S * color1.V < 0.032)	return abs(color1.V - color2.V) * 100;
+ 	return abs(color1.H - color2.H)*100;
+}
+
+short color_histogram::compare_with_base(HSV color, int index)
+{
+	short dst = hsv_distance(color, base[index].color);
+ 	cout << format("%d-H:%.0f S:%.2f V:%.2f", 
+		dst, base[index].color.H, base[index].color.S, base[index].color.V) << endl;
+	return dst;
+}

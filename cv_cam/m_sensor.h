@@ -14,13 +14,14 @@ using namespace std;
 #define MAX_SECTORS 80
 #define BIG_SECTOR 6
 
-/* Sensor der analysiert Vorbestimtes Bereich */
+/* Sensor der analysiert vorbestimtes Bereich */
 class m_sensor
 {
+
 	static uint index[POINTS_IN_CIRCLE]; // Index fuer Versatz in Speicher für Bogenpixel
 	static int8_t dx[POINTS_IN_CIRCLE]; // delta x in Koordinaten Bogenpixel vom Sensormitte
 	static int8_t dy[POINTS_IN_CIRCLE];		// delta y in Koordinaten Bogenpixel vom Sensormitte
-	static Mat out;							// Ausschnitt für Sensor zur Bearbeitung
+	static Mat out;							// Ausschnitt für Sensor zur Bearbeitung // TODO aktive Sensor nr zu abildung hinterlegen
 	static uint sensors_number;				// Anzahl Sensoren für die Klasse
 	static short smooth_index[9];			// Glätten Wert für jedees Bogenpixel //TODO notwendig ?
 
@@ -51,7 +52,7 @@ class m_sensor
 	void search_sectors(PixelColor next_pixel, int pegel);
 
 	// findet Sektoren im Sensor
-	void search_sectors(Mat* sensor_mat, int pegel, const color_distance_enum dist); 
+	void search_sectors(Mat* sensor_mat, int pegel, const color_distance_func dist); 
 
 	// vergleicht Histogramms mit Anderem Sensor und gibt Abstand zurück
 	ushort compare_histogramms(m_sensor* ms); 
@@ -81,7 +82,7 @@ class m_sensor
 	inline PixelColor smooth_color(PixelColor* p);
 
 	// zeichnet Sensor auf dem Bild input
-	void mark_global(const Mat* input); //HACK check fuer bildgroesse 
+	//void mark_global(const Mat* input); //HACK check fuer bildgroesse 
 	//void soi(const Mat* src, Mat* dst, uint magnify);
 
  	//list<ushort> nighbors; // nebenstehenden Sensoren //HACK umbauen in private member
@@ -89,6 +90,10 @@ class m_sensor
 	vector<segment> line_segments;	// liniensegmente als Ausgabe der Analyse
 
 public:
+
+	const static String sensor_magnifyed_window; // CV Fentername für aktive Sensor
+	const static String sensor_result_window;	 // CV Fentername für ergebniss aktiven Sensor
+
 	m_sensor(Point p, uint sz); // Konstruktor
 	m_sensor();	 // Konstruktor
 	~m_sensor(); //	Destruktor

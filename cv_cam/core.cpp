@@ -1,5 +1,4 @@
 #include "core.h"
-//#include <random>
 #include "opencv2/imgproc.hpp"
 
 
@@ -13,7 +12,7 @@ core::~core()
 }
 
 
-short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
+short color_distance(PixelColor Pixel0, PixelColor Pixel1, const color_distance_func function_nr = RGB_3SUM)
 {
 	int m = 9;
 	switch (function_nr)
@@ -32,10 +31,15 @@ short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
 		return std::max(abs(Pixel0.x - Pixel1.x), m);
 
 	case HSV_HV:
-		return 2 * (Pixel0.x - Pixel1.x) + (Pixel0.y - Pixel1.y);
+		HSV a = RGBToHSV2(RGB(Pixel0.z, Pixel0.y, Pixel0.x));
+		HSV b = RGBToHSV2(RGB(Pixel1.z, Pixel1.y, Pixel1.x));
 
-	default:
-		return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);
+		//if (a.S * b.V < 0.032)	return abs(a.V - b.V);
+		return 10*(a.H - b.H);
+		
+
+	//default:
+	//	return abs(Pixel0.x - Pixel1.x) + abs(Pixel0.y - Pixel1.y) + abs(Pixel0.z - Pixel1.z);
 	}
 
 	return 0;
@@ -44,8 +48,6 @@ short color_distance(PixelColor Pixel0, PixelColor Pixel1, int8_t function_nr)
 PixelColor middle_color(PixelColor PA, PixelColor PB)
 {
 	PixelColor tmp;
-
-	//tmp = PA / 2 + PB / 2;
 
 	tmp.x = (PA.x + PB.x) / 2;
 	tmp.y = (PA.y + PB.y) / 2;
@@ -180,22 +182,11 @@ HSV RGBToHSV(RGB rgb) {
 	return HSV(h, s, (v / 255));
 }
 
-short hsv_distance(HSV color1, HSV color2)
-{
-	//TODO graue Farben richtig einklassifi
-
-	if (color1.S < 0.1)	return abs(color1.V - color2.V) * 360;
-
-	if (color1.V == 1 && color1.S > 0.1) 
-		return abs(color1.V - color2.V) * 360;
-	else
-		return abs(color1.H - color2.H);
-}
-
 /* 
 Input 0 <= B <= 255, 0 <= G <= 255, 0 <= R <= 255
 Output 0 <= H <= 360, 0 <= S <= 1, 0 <= V <= 1  
 */
+
 HSV RGBToHSV2(const RGB rgb)
 {
 	//OPTI optimieren

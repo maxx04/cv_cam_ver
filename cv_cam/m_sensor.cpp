@@ -1,8 +1,10 @@
 #include "m_sensor.h"
 #include "plot.hpp"
 
-/* Statische Klassenvariable */
+/* Statische Klassenvariablen */
 
+const String m_sensor::sensor_magnifyed_window = "magnify sensor";
+const String m_sensor::sensor_result_window = "result sensor";
 uint m_sensor::index[POINTS_IN_CIRCLE];
 int8_t m_sensor::dx[POINTS_IN_CIRCLE];
 int8_t m_sensor::dy[POINTS_IN_CIRCLE];
@@ -61,17 +63,16 @@ m_sensor::m_sensor(Point p, uint sz)
 
 
 }
-// Konstruktor mit Vorgabe
+
 m_sensor::m_sensor()
 {
 	m_sensor(Point(0, 0), 24);
 }
-// Destruktor
+
 m_sensor::~m_sensor()
 {
 
 }
-
 
 void m_sensor::proceed(const Mat * input, int pegel)
 {
@@ -102,7 +103,7 @@ void m_sensor::proceed(const Mat * input, int pegel)
 
 		//HACK Berechnungsmethode beachten!
 
-		values[i] = color_distance(Pixel0, Pixel1, color_distance_enum::RGB_3SUM); 
+		values[i] = color_distance(Pixel0, Pixel1, color_distance_func::RGB_3SUM); 
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
 		search_sectors(Pixel1, pegel);
@@ -232,7 +233,7 @@ void m_sensor::search_sectors(PixelColor next_pixel, int pegel)
 
 }
 
-void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_enum dist)
+void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_func dist)
 {
 	static Sector sv[POINTS_IN_CIRCLE];
 
@@ -308,7 +309,6 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_e
 	}
 }
 
-/* Gibt Position */
 Point m_sensor::get_position()
 {
 	return pos;
@@ -348,7 +348,7 @@ inline short m_sensor::get_next_ring_value(ushort index, int8_t versatz) //HACK 
 
 void m_sensor::smooth_values(uint8_t range)
 {
-	static short new_values[POINTS_IN_CIRCLE - 1];
+	static short new_values[POINTS_IN_CIRCLE];
 
 	for (ushort k = 0; k < POINTS_IN_CIRCLE; k++)
 	{
@@ -366,7 +366,7 @@ void m_sensor::smooth_values(uint8_t range)
 
 }
 
-void m_sensor::draw_magnifyied(const Mat * input, const String magnifiyed_window_name)
+void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_name)
 {
 
 	//CV_Assert((*input).type() == out.type());
@@ -375,6 +375,10 @@ void m_sensor::draw_magnifyied(const Mat * input, const String magnifiyed_window
 
 	(*input)(roi).copyTo(out);
 
+	Mat resMat;
+
+	cvtColor(out, resMat, COLOR_BGR2HSV);
+
 	plot_graph("plot");
 
 	clr_hst.draw(pos);
@@ -382,7 +386,7 @@ void m_sensor::draw_magnifyied(const Mat * input, const String magnifiyed_window
 	//clr_hst.draw_base();
 
 	cout << "keypoints: " << key_points.size(); // << " - nighbors: " << nighbors.size();
-	cout << "sectors: " << (uint)sectors_nmb << endl;
+	cout << " sectors: " << (uint)sectors_nmb << endl;
 
 	//line segments
 
@@ -431,6 +435,17 @@ void m_sensor::draw_magnifyied(const Mat * input, const String magnifiyed_window
 
 	//cvtColor(out, out, COLOR_HSV2BGR);
 	imshow(magnifiyed_window_name, out);
+
+#pragma region Test
+
+	Mat hsvchannel[3];
+	// The actual splitting.
+	split(resMat, hsvchannel);
+
+	imshow(sensor_result_window, hsvchannel[0]);
+
+#pragma endregion
+
 
 }
 

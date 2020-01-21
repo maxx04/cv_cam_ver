@@ -2,16 +2,19 @@
 #include "m_sensor.h"
 #include "sensor_set.h"
 #include "key_points_set.h"
-#include "contours.h"
-#include "pyramide.h"					   
+#include "color_histogram.h"
+/*#include "contours.h"
+#include "pyramide.h"*/					   
 
 
 using namespace cv;
 using namespace std;
 
 int sensor_nr = 0;
-int pegel = 15;
+int pegel = 8;
 int number_sensors;
+const cv::String main_window = "frame";
+
 
 Mat frame0, frame1, fg0, fg1;
 
@@ -58,10 +61,10 @@ static void redraw_all(int /*arg*/, void*)
  	//pyr.draw_contours(&tmp);
 
 	//zeige bild
-	imshow("points", tmp);
+	imshow(main_window, tmp);
 
 	//zeichne ausgewaehlte sensor
-	s_set.draw_selected_sensor(&frame1, "magnify");
+	s_set.draw_selected_sensor(&frame1, m_sensor::sensor_magnifyed_window);
 
 }
 
@@ -79,8 +82,7 @@ static void onMouse(int event, int x, int y, int, void*)
 	{
 		sensor_nr = s_set.find_nearest_sensor(x, y);
 
-		cv::setTrackbarPos("sensor N", "magnify", sensor_nr);
-
+		cv::setTrackbarPos("sensor N", m_sensor::sensor_magnifyed_window, sensor_nr);
 	}
 
 	return;
@@ -91,16 +93,29 @@ static void onMouse_color(int event, int x, int y, int, void*)
 	if (event == EVENT_LBUTTONDOWN)
 	{
 		//Draw color
-		PixelColor a = s_set.get_color(x, y, &frame1);
+
+	 	PixelColor a = s_set.get_color(x, y, &frame1);
 
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(a.z, a.y, a.x);
 
 		hsv = RGBToHSV2(rgb);
 
-		cout << format("%02d-%02d", x, y);
+		m_sensor m = s_set.get_selected_sensor();
+
+		m.proceed(&frame1, 10);
+
+		color_histogram h = m.get_histogramm();
+
+
+		//for (size_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
+		//{
+		//	ushort dst = h.compare_with_base(hsv, i);
+		//}
+
+	  	cout << format("%02d-%02d", x, y);
 		cout << format(" B:%3d G:%3d R:%3d", a.x, a.y, a.z);
-		cout << format("--H:%.0f S:%.2f V:%.2f", hsv.H, hsv.S, hsv.V) << endl;
+		cout << format("--H:%.0f S:%.2f V:%.2f -> %.3f", hsv.H, hsv.S, hsv.V, hsv.S*hsv.V) << endl;
 
 
 	}
@@ -134,21 +149,23 @@ int main(int argc, const char * argv[])
 
 	number_sensors = s_set.number_sensors;
 	
-	namedWindow("points", WINDOW_NORMAL);
-	setMouseCallback("points", onMouse, 0);
+	namedWindow(main_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
+	setMouseCallback(main_window, onMouse, 0);
 
-	namedWindow("magnify", WINDOW_NORMAL || WINDOW_KEEPRATIO);
-	setMouseCallback("magnify", onMouse_color, 0);
+	namedWindow(m_sensor::sensor_magnifyed_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
+	namedWindow(m_sensor::sensor_result_window,  WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 
-	createTrackbar("sensor N", "magnify", &sensor_nr, number_sensors, redraw_all);
-	createTrackbar("pegel", "magnify", &pegel, 100, pegel_check);
+	setMouseCallback(m_sensor::sensor_magnifyed_window, onMouse_color, 0);
+
+	createTrackbar("sensor N", m_sensor::sensor_magnifyed_window, &sensor_nr, number_sensors, redraw_all);
+	createTrackbar("pegel", m_sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
 
 	//////////////////
 
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-	Mat tmp2 = Mat::zeros(frame0.rows, frame0.cols, CV_8UC1);
-	Mat tmp1;
+	//vector<vector<Point>> contours;
+	//vector<Vec4i> hierarchy;
+	//Mat tmp2 = Mat::zeros(frame0.rows, frame0.cols, CV_8UC1);
+	//Mat tmp1;
 
 
 	for (int i = 0; cam.read(frame1); i++)
@@ -214,14 +231,12 @@ int main(int argc, const char * argv[])
 
 		redraw_all(0, 0);
 
-		waitKey();
-
-		//fg1.copyTo(fg0);
-
+		char c = waitKey();
+		if (c == 'q')
+		{
+			break;
+		}
 	}
 
-	waitKey();
-
-	//TODO Fenster schliessen
-	return 0;
+ 	return 0;
 }

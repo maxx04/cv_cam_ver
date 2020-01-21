@@ -7,7 +7,7 @@ int8_t key_point_gradient::dx[KP_POINTS_IN_CIRCLE];
 int8_t key_point_gradient::dy[KP_POINTS_IN_CIRCLE];
 
 bool key_point_gradient::index_ready = false;
-short key_point_gradient::size = 0;
+short key_point_gradient::size = 2 * KEYPOINT_RADIUS + 2; 
 Mat key_point_gradient::keypoint_mat;
 Mat key_point_gradient::kp_roi;
 
@@ -18,8 +18,6 @@ key_point_gradient::key_point_gradient()
 
 	if (!index_ready) //nur bei erstem sensor alles berechnen
 	{
-		size = 2 * KEYPOINT_RADIUS + 2;
-
 		float da = 0.0f;
 
 		for (ushort number = 0; number < KP_POINTS_IN_CIRCLE; number++)
@@ -39,6 +37,11 @@ key_point_gradient::key_point_gradient()
 
 }
 
+key_point_gradient::key_point_gradient(Point p)
+{
+	key_point_gradient();
+	position = p;
+}
 
 void key_point_gradient::draw_magnifyied(const Mat * input, const String fenster)
 {
@@ -52,21 +55,11 @@ void key_point_gradient::draw_magnifyied(const Mat * input, const String fenster
 	imshow(fenster, keypoint_mat);
 }
 
-key_point_gradient::key_point_gradient(Point p)
-{
-	key_point_gradient();
-	position = p;
-}
-
 key_point_gradient::~key_point_gradient()
 {
 }
 
-void key_point_gradient::get_direction(Mat block_1, Point pos)
-{
-}
-
-void key_point_gradient::query(const Mat * input, int pegel)
+void key_point_gradient::proceed(const Mat * input, int pegel)
 {
 
 	//kopieren teil vom bild

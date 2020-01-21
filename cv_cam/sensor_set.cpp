@@ -66,7 +66,7 @@ void sensor_set::select_sensor(int sensor_nr)
 	}
 }
 
-void sensor_set::draw_selected_sensor(Mat * output_image)
+void sensor_set::draw_selected_sensor(Mat* output_image)
 {
 	m_sensor m = sensors[selected_sensor];
 
@@ -81,17 +81,17 @@ void sensor_set::draw_selected_sensor(Mat * output_image)
 	}
 	*/
 
-	// sensor selber zeichnen
+	// sensor markieren auf dem Gesamtbild
 	rectangle(*output_image, Sensor_roi, Scalar(0, 0, 250));
 
 }
 
-void sensor_set::draw_selected_sensor(const Mat * input_image, const String magnifyed_view_window)
+void sensor_set::draw_selected_sensor(const Mat* input_image, const String magnifyed_view_window_name)
 {
 	m_sensor m = sensors[selected_sensor];
 
 	// vergroesserte fenster mit "key points" anzeigen
-	m.draw_magnifyied(input_image, magnifyed_view_window);
+	m.draw_magnifyied(input_image, magnifyed_view_window_name);
 }
 
 void sensor_set::proceed(const Mat * block_1, int pegel)

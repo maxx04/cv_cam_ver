@@ -12,8 +12,6 @@ class sensor_set
 	vector<m_sensor> sensors;  // Vektor aus Sensors
 	int selected_sensor = 0;   // actives Sensor zum Anzeigen
 
-
-
 public:
 	int number_sensors = 100;	// Anzahl erstellten Sensoren
 
@@ -29,13 +27,16 @@ public:
 	// setzt aktives (untersuchte)  Sensor an
 	void select_sensor(int sensor_nr);
 
+	// gibt slected Sensor
+	inline m_sensor  get_selected_sensor() { return sensors[selected_sensor]; };
+
 	// auswertet alle Sensore mit Bild input_image und pegel für die Schlüsselpunkte
  	void proceed(const Mat* input_image, int pegel);
 
 	// füllt Schlüsselpunkte in key_points aus bild input // TODO Bild ist nicht notwendig
 	void add_keypoints(key_points_set* key_points, Mat* input);
 
-	// zeichnet Sensor auf Vergrössertem Bild
+	// zeichnet Sensor auf vergrössertem Bild
 	void draw_selected_sensor(const Mat* input_image, const String magnifyed_view_window_name);
 
 	// zeichnet Sensor auf dem Bild	output_frame

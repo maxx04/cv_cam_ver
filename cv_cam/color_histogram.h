@@ -25,9 +25,9 @@ class color_histogram
 
 protected:
 
-	static hst_hsv base[COLOR_HISTOGRAM_BREITE]; // referenzfarben TODO make protected
+	static hst_hsv base[COLOR_HISTOGRAM_BREITE]; // referenzfarben 
 
-	static bool base_defined; // Sind die Referenzfarben gefüllt?
+	static bool base_defined; // true == sind die Referenzfarben befüllt
 
 	uint8_t histogram[COLOR_HISTOGRAM_BREITE]; // Trefferanzahl für die Referenzfarben (für den Sensor)
 
@@ -50,6 +50,10 @@ public:
 	void draw(Point start);	  // Draw Histogramm in eigenem Fenster
 
 	Scalar get_mean_color();   // gibt Hauptfarbe zurück
+
+	short hsv_distance(HSV color1, HSV color2);	 // HSV abstand zwischen Farben
+
+	short compare_with_base(HSV color, int index);  // HSV abstand zwischen farbe und Referenzfarbe
  
 };
 
