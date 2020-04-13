@@ -1,14 +1,13 @@
-#include "key_points_set.h"
-#include "key_point_gradient.h"
 #include "sensor_set.h"
+#include <opencv2/imgproc.hpp>
 #include <random>
+#include <iostream>
 
-class key_points_set;
+using namespace std;
 
 sensor_set::sensor_set(Mat frame0, int ns)
 {
- 	const int sensor_size = 24;
-	number_sensors = ns;
+ 	int sensor_size = s_sensor(&frame0, Point(0,0)).size;
 
 	default_random_engine generator;
 
@@ -16,20 +15,17 @@ sensor_set::sensor_set(Mat frame0, int ns)
 	uniform_int_distribution<int> distribution_y(0, frame0.rows - sensor_size);
 
 	// sensoren erstellen und verteilen
-	for (size_t i = 0; i < number_sensors; i++)
+	for (size_t i = 0; i < ns; i++)
 	{
 		Point sensor_position(distribution_x(generator), distribution_y(generator));
-		sensors.push_back(m_sensor(sensor_position, sensor_size));
+		sensors.push_back((sensor*) new s_sensor(&frame0, sensor_position));	// HACK notwendige sensor erstellen
 	}
 
-	// nachbarn ermitteln
-	int sensors_number = (int)sensors.size();
+	number_sensors = sensors.size();
 
-	for (int m = 0; m < sensors_number; m++)
+	for (int m = 0; m < number_sensors; m++)
 	{
-		m_sensor* mi = &sensors[m];
 
-		cout << m << "\r";
 
 		//for (int mn = 0; mn < sensors_number; mn++)
 		//{
@@ -48,10 +44,6 @@ sensor_set::sensor_set(Mat frame0, int ns)
 
 }
 
-sensor_set::sensor_set()
-{
-
-}
 
 sensor_set::~sensor_set()
 {
@@ -60,121 +52,46 @@ sensor_set::~sensor_set()
 
 void sensor_set::select_sensor(int sensor_nr)
 {
-	if (sensor_nr >= 0 && sensor_nr < number_sensors)
+	if (sensor_nr >= 0 && sensor_nr < sensors.size())
 	{
 		selected_sensor = sensor_nr;
 	}
 }
 
-void sensor_set::draw_selected_sensor(Mat* output_image)
+
+void sensor_set::set_image(Mat* input_image)
 {
-	m_sensor m = sensors[selected_sensor];
-
-	Rect Sensor_roi(m.get_position(), m.get_size());
-
-	/*
-	// Nachbarn zeichnen
-	for each (ushort sensor_number in m.nighbors)
-	{
-		Rect n_roi(sensors[sensor_number].get_position(), sensors[sensor_number].get_size());
-		cv::rectangle(*output_image, n_roi, Scalar(0, 250, 120));
-	}
-	*/
-
-	// sensor markieren auf dem Gesamtbild
-	rectangle(*output_image, Sensor_roi, Scalar(0, 0, 250));
-
+	sensors[0] -> set_image(input_image);
 }
 
-void sensor_set::draw_selected_sensor(const Mat* input_image, const String magnifyed_view_window_name)
+void sensor_set::draw(Mat * input_image )
 {
-	m_sensor m = sensors[selected_sensor];
+	set_image( input_image );
 
 	// vergroesserte fenster mit "key points" anzeigen
-	m.draw_magnifyied(input_image, magnifyed_view_window_name);
+	sensors[selected_sensor] -> draw_magnifyied();
+
+	// auf dem gesamtbild
+	sensors[selected_sensor] -> draw();
+
 }
 
-void sensor_set::proceed(const Mat * block_1, int pegel)
+void sensor_set::proceed(const Mat * region_of_interest, int pegel)
 {
-	for (int m = 0; m < sensors.size(); m++) 
-		sensors[m].proceed(block_1, pegel);
+	for (int m = 0; m < sensors.size(); m++)
+		sensors[m] -> proceed(region_of_interest); //, pegel);
 }
 
-void sensor_set::add_keypoints(key_points_set* key_points, Mat* input)
-{
-	vector<Point> temp(20);
-
-	key_points->keypoints_vector.clear();
-	key_points->activ_frame = input; //HACK make privat
-
-	for each  (m_sensor m in sensors)
-	{
-		temp.clear();
-		m.add_points(&temp);
-
-		for each (Point p in temp)
-		{
-			key_points-> add_point(key_point_gradient(p));
-		}
-	}
-}
-
-void sensor_set::draw_keypoints(Mat* output_frame)
-{
-
-
-	for each  (m_sensor m in sensors)
-	{  
-		m.draw(output_frame);
-	}
-}
-
-void sensor_set::draw_line_segments(Mat* output_frame)
-{
-
-	Scalar c(255,80,255);
-
-	for each  (m_sensor m in sensors)
-	{
-		//TODO realisieren in m_sensor
-
-		/*Point p1 = m.get_position();
-
-		for each(segment segm in m.line_segments)
-		{
-			line((*output_frame), p1 + segm.P1, p1 + segm.P2, c);
-		}*/
-	}
-}
-
-void sensor_set::draw_flats(Mat* output_frame)
-{
-	//PixelColor color = { 0,120,255 };
-	Size sz = sensors[0].get_size()/2;
-
-	for each  (m_sensor m in sensors)
-	{
-		//TODO realisieren in m_sensor
-
-		//if (m.key_points.size() == 0)
-		//{
-		//	Point p1 = m.get_position()+Point(sz);
-
-		//	//rectangle((*output_frame), Rect(p1.x, p1.y, 12, 12), Scalar(m.color.x, m.color.y, m.color.z));
-		//	//circle((*output_frame), p1, 6, Scalar(m.color.x, m.color.y, m.color.z),-1);
-		//}
-
-	}
-}
 
 int sensor_set::find_nearest_sensor(int x, int y)
 {
-	int ret,d = 0;
+	int ret = 0;
+	int d = 0;
 	int dist_min = 100000;
 
-	for (int m = 0; m < number_sensors; m++)
+	for (int m = 0; m < sensors.size(); m++)
 	{
-		d = sensors[m].get_distance_to_middle(x, y);
+		d = sensors[m]-> get_distance_to_middle(x, y);
 		if (d < dist_min)
 		{
 			selected_sensor = m;
@@ -188,9 +105,7 @@ int sensor_set::find_nearest_sensor(int x, int y)
 
 PixelColor sensor_set::get_color(int x, int y, const Mat * input)
 {
-	m_sensor m = sensors[selected_sensor];
-
-	return m.get_color(x, y, input);
+	return sensors[selected_sensor]->get_color(x, y, input);
 }
 
 //contours sensor_set::find_contours(void)

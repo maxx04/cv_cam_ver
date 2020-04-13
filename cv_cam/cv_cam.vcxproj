@@ -58,28 +58,27 @@
     <ClInclude Include="color_histogram.h" />
     <ClInclude Include="contours.h" />
     <ClInclude Include="core.h" />
-    <ClInclude Include="cv_cam.h" />
-    <ClInclude Include="key_points_set.h" />
-    <ClInclude Include="key_point_gradient.h" />
     <ClInclude Include="m_sensor.h" />
     <ClInclude Include="plot.hpp" />
     <ClInclude Include="pyramide.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="segment.h" />
+    <ClInclude Include="sensor.h" />
     <ClInclude Include="sensor_set.h" />
+    <ClInclude Include="s_sensor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="color_histogram.cpp" />
     <ClCompile Include="contours.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="cv_cam.cpp" />
-    <ClCompile Include="key_points_set.cpp" />
-    <ClCompile Include="key_point_gradient.cpp" />
     <ClCompile Include="m_sensor.cpp" />
     <ClCompile Include="plot.cpp" />
     <ClCompile Include="pyramide.cpp" />
     <ClCompile Include="segment.cpp" />
+    <ClCompile Include="sensor.cpp" />
     <ClCompile Include="sensor_set.cpp" />
+    <ClCompile Include="s_sensor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="cv_cam.rc" />

@@ -1,8 +1,7 @@
-#include "cv_cam.h"
-#include "m_sensor.h"
 #include "sensor_set.h"
-#include "key_points_set.h"
 #include "color_histogram.h"
+#include <iostream>
+#include <opencv2/highgui.hpp>
 /*#include "contours.h"
 #include "pyramide.h"*/					   
 
@@ -12,7 +11,6 @@ using namespace std;
 
 int sensor_nr = 0;
 int pegel = 8;
-int number_sensors;
 const cv::String main_window = "frame";
 
 
@@ -20,13 +18,12 @@ Mat frame0, frame1, fg0, fg1;
 
 //pyramide pyr;
 
-sensor_set s_set; // alle Sensoren
-key_points_set k_set; // alle Schlüsselpunkte
+sensor_set* s_set; // alle Sensoren
 //contours cnt;
 
 static void help()
 {
-	std::cout << "\nThis program demonstrates\n"
+	cout << "\nThis program demonstrates\n"
 		<< "Usage: \n" << "demhist [videoe_name -- Defaults to ../data/baboon.avi]" << std::endl;
 }
 
@@ -40,38 +37,24 @@ static void redraw_all(int /*arg*/, void*)
 
 	Mat tmp;
 	frame1.copyTo(tmp);
-	//cvtColor(tmp, tmp, COLOR_HSV2BGR);
+	//cvtColor(tmp, tmp, COLOR_BGR2BHSV);
 
-	s_set.select_sensor(sensor_nr);
-
-	cout << "Sensor: " << sensor_nr << endl;
-
-	//zeichne sensor und nachbarn
-	s_set.draw_selected_sensor(&tmp);
-
-	//zeichne sensors ohne keypoints
-	s_set.draw_flats(&tmp);
-
-	//zeichne keypoints
-	s_set.draw_keypoints(&tmp);
-
-	//zeichne linien
-	s_set.draw_line_segments(&tmp);
+	s_set -> select_sensor(sensor_nr);
 
  	//pyr.draw_contours(&tmp);
 
+	//zeichne ausgewaehlte sensor
+	s_set->draw(&tmp);
+
 	//zeige bild
 	imshow(main_window, tmp);
-
-	//zeichne ausgewaehlte sensor
-	s_set.draw_selected_sensor(&frame1, m_sensor::sensor_magnifyed_window);
 
 }
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set.proceed(&frame1, pegel); // berechne sensoren neu
-	s_set.add_keypoints(&k_set, &frame1); // ausleite sensoren neu
+	s_set -> proceed(&frame1, pegel); // berechne sensoren neu
+
 	redraw_all(0, 0);
 }
 
@@ -80,9 +63,9 @@ static void onMouse(int event, int x, int y, int, void*)
 
 	if (event == EVENT_LBUTTONDOWN)
 	{
-		sensor_nr = s_set.find_nearest_sensor(x, y);
+		sensor_nr = s_set -> find_nearest_sensor(x, y);
 
-		cv::setTrackbarPos("sensor N", m_sensor::sensor_magnifyed_window, sensor_nr);
+		cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
 	}
 
 	return;
@@ -94,18 +77,17 @@ static void onMouse_color(int event, int x, int y, int, void*)
 	{
 		//Draw color
 
-	 	PixelColor a = s_set.get_color(x, y, &frame1);
+	 	PixelColor a = s_set -> get_color(x, y, &frame1);
 
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(a.z, a.y, a.x);
 
 		hsv = RGBToHSV2(rgb);
 
-		m_sensor m = s_set.get_selected_sensor();
 
-		m.proceed(&frame1, 10);
+		//s_set->get_selected_sensor().proceed(&frame1);
 
-		color_histogram h = m.get_histogramm();
+		//color_histogram h = m.get_histogramm();
 
 
 		//for (size_t i = 0; i < COLOR_HISTOGRAM_BREITE; i++)
@@ -119,6 +101,8 @@ static void onMouse_color(int event, int x, int y, int, void*)
 
 
 	}
+
+	redraw_all(0, 0);
 }
 
 int main(int argc, const char * argv[])
@@ -137,28 +121,26 @@ int main(int argc, const char * argv[])
 
 	if (!cam.isOpened()) {
 		//error in opening the video input
-		cerr << "Unable to open video file: " << endl;
+		cerr << "Unable to open video file: " << inputVideo << endl;
 		exit(EXIT_FAILURE);
 	}
 
 	cam.read(frame0);
 
-	s_set = sensor_set(frame0, 1800);
+	s_set = new sensor_set(frame0, 2800);	
 									    
 	//pyr.set_position(Point(500, 400));
-
-	number_sensors = s_set.number_sensors;
 	
 	namedWindow(main_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 	setMouseCallback(main_window, onMouse, 0);
 
-	namedWindow(m_sensor::sensor_magnifyed_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
-	namedWindow(m_sensor::sensor_result_window,  WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
+	namedWindow(sensor::sensor_magnifyed_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
+	namedWindow(sensor::sensor_result_window,  WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 
-	setMouseCallback(m_sensor::sensor_magnifyed_window, onMouse_color, 0);
+	setMouseCallback(sensor::sensor_magnifyed_window, onMouse_color, 0);
 
-	createTrackbar("sensor N", m_sensor::sensor_magnifyed_window, &sensor_nr, number_sensors, redraw_all);
-	createTrackbar("pegel", m_sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
+	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &sensor_nr, s_set-> number_sensors, redraw_all);
+	createTrackbar("pegel", sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
 
 	//////////////////
 
@@ -170,73 +152,33 @@ int main(int argc, const char * argv[])
 
 	for (int i = 0; cam.read(frame1); i++)
 	{
-		//HACK Achtung! Arbeiten in HSV Raum!
-		//cvtColor(frame1, frame1, COLOR_BGR2HSV);
-
-		//GaussianBlur(frame1, fg1, Size(3, 3),3.6f); // smooth
-		//frame1.copyTo(fg1);
-/*
-		threshold(fg1, tmp1, 30, 160, THRESH_BINARY_INV); // neues bild mit grenze
-
-		tmp1.convertTo(tmp2, CV_8U); // konvertieren in  8 bit format
-		cvtColor(tmp2, tmp1, CV_BGR2GRAY); // konvertieren in grauform
-
-		findContours(tmp1, contours, hierarchy,
-			CV_RETR_CCOMP, CV_CHAIN_APPROX_TC89_L1); //fnde konturen
-
-		fg1.copyTo(frame1);
-
-
-		Moments M;
-		double A[7];
-		Mat f;
-
-		// iterate through all the top-level contours,
-		// draw each connected component with its own random color
- 		int idx = 0;
-		for (; idx >= 0; idx = hierarchy[idx][0])
-		{
-			Scalar color(rand() & 255, rand() & 255, rand() & 255);
-			cout << idx << " - " << contours[idx].size() << endl;
-			M = moments(contours[idx]);
-			HuMoments(M, A);
-
-			cout << format("%f" ,A[0]) << endl;
-
- 			drawContours(frame1, contours, idx, color, 3, 8, hierarchy);
-		}
-
-*/
-
 		const double start = (double)getTickCount();
 
 // --------------------------------------------------------------------------------
 //	finde keypoints, histogramms
-		s_set.proceed(&frame1, pegel);
+		s_set -> proceed(&frame1, pegel);
 
 		//pyr.query(&frame1, pegel);
 
 
 //	finde konturen, bereiche mit gleichen histogrammen
-		//cnt = s_set.find_contours();
+		//cnt = s_set -> find_contours();
 // --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();
 
 		cout << i << " - ElapsedTime: " << timeSec << " sec " << endl;
 
-		s_set.add_keypoints(&k_set, &frame1);
-
-		//cout << "Keypoints:" << k_set.keypoints_vector.size() << endl;
-
 		redraw_all(0, 0);
 
 		char c = waitKey();
+
 		if (c == 'q')
 		{
 			break;
 		}
 	}
+
 
  	return 0;
 }

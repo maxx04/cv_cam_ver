@@ -116,7 +116,7 @@ public:
 	color_histogram get_histogramm();
 
 	// zufügt Sensor's Schlüsselpunkte zu Vector
-	void add_points(vector<Point>* global_points);
+	void get_points(vector<Point>* global_points);
 
 	// prüft ob Punkt innerhalb Sensor liegt
 	bool intersection(Point point);

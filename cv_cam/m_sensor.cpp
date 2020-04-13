@@ -12,7 +12,7 @@ short m_sensor::smooth_index[9];
 uint m_sensor::sensors_number = 0;
 Mat m_sensor::out;
 
-m_sensor::m_sensor(Point p, uint sz)
+m_sensor::m_sensor(Point p = Point(0, 0), uint sz = 16)
 {
 	assert(sz > 12 && sz < 120); // test auf Groesse
 	assert(sz % 2 == 0); // test auf gerade Zahl
@@ -66,7 +66,7 @@ m_sensor::m_sensor(Point p, uint sz)
 
 m_sensor::m_sensor()
 {
-	m_sensor(Point(0, 0), 24);
+	m_sensor(Point(0, 0), 16);
 }
 
 m_sensor::~m_sensor()
@@ -93,6 +93,20 @@ void m_sensor::proceed(const Mat * input, int pegel)
 
 	// reset histogramm
 	clr_hst.reset();
+
+	//int n = 0;
+
+	//for ( int i = 0;  i < out.cols; i++)
+	//{
+	//	for (int j = 0; j < out.rows; j++)
+	//	{
+	//		Pixel1 = *(pixelPtr + n);
+	//		clr_hst.add(Pixel1);
+	//	}
+
+	//	n++;
+	//}
+
 
 	for (int i = 0; i < POINTS_IN_CIRCLE; i += 1)
 	{
@@ -482,7 +496,7 @@ void m_sensor::plot_graph(const String fenster)
 	imshow(fenster, display);
 }
 
-void m_sensor::add_points(vector<Point> * global_points)
+void m_sensor::get_points(vector<Point> * global_points)
 {
 	for each (Point p in key_points)
 	{

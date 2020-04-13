@@ -8,7 +8,7 @@
       <AdditionalIncludeDirectories>$(OPENCV_BUILD)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>bin\Debug;$(OPENCV_DIR)\lib\;$(OPENCV_DIR)\bin\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_BUILD)\$(PlatformTarget)\vc15\bin;$(OPENCV_BUILD)\$(PlatformTarget)\vc15\lib;bin\Debug;$(OPENCV_DIR)\lib\Debug;$(OPENCV_DIR)\bin\Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_world412d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>true</LinkStatus>
     </Link>
