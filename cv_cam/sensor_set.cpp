@@ -7,7 +7,7 @@ using namespace std;
 
 sensor_set::sensor_set(Mat frame0, int ns)
 {
- 	int sensor_size = s_sensor(&frame0, Point(0,0)).size;
+ 	int sensor_size = s_sensor(&frame0, Point(0,0), 32).size;  // HACK nicht aendern, sonst fehler
 
 	default_random_engine generator;
 
@@ -18,7 +18,7 @@ sensor_set::sensor_set(Mat frame0, int ns)
 	for (size_t i = 0; i < ns; i++)
 	{
 		Point sensor_position(distribution_x(generator), distribution_y(generator));
-		sensors.push_back((sensor*) new s_sensor(&frame0, sensor_position));	// HACK notwendige sensor erstellen
+		sensors.push_back((sensor*) new s_sensor(&frame0, sensor_position, 32));	// HACK notwendige sensor erstellen
 	}
 
 	number_sensors = sensors.size();
@@ -76,10 +76,18 @@ void sensor_set::draw(Mat * input_image )
 
 }
 
-void sensor_set::proceed(const Mat * region_of_interest, int pegel)
+void sensor_set::proceed(Mat * region_of_interest, int pegel)
 {
-	for (int m = 0; m < sensors.size(); m++)
-		sensors[m] -> proceed(region_of_interest); //, pegel);
+	set_image( region_of_interest );
+
+	for (sensor* m : sensors) m -> proceed();
+}
+
+void sensor_set::proceed(int n)
+{
+	//set_image(region_of_interest);
+
+	sensors[n]->proceed();
 }
 
 
@@ -106,6 +114,11 @@ int sensor_set::find_nearest_sensor(int x, int y)
 PixelColor sensor_set::get_color(int x, int y, const Mat * input)
 {
 	return sensors[selected_sensor]->get_color(x, y, input);
+}
+
+sensor* sensor_set::get_sensor(int n)
+{
+	return sensors[n];
 }
 
 //contours sensor_set::find_contours(void)

@@ -30,7 +30,9 @@ public:
 	void draw(Mat* input_image); // zeichnet Sensor auf vergrössertem Bild
 
 	// auswertet alle Sensore mit Bild input_image und pegel für die Schlüsselpunkte
- 	void proceed(const Mat* input_image, int pegel);
+ 	void proceed( Mat* input_image, int pegel );
+
+	void proceed(int n);   // sensor n 
 
 	// füllt Schlüsselpunkte in key_points aus bild input // TODO Bild ist nicht notwendig
 	//void add_keypoints(key_points_set* key_points, Mat* input);
@@ -40,6 +42,8 @@ public:
 
 	// gibt Farbe vom Pixel x,y aus dem Bild input 
 	PixelColor get_color(int x, int y, const Mat* input);
+
+	sensor* get_sensor(int n);
 
 	//contours find_contours(void);
 

@@ -1,2 +1,2 @@
 Microsoft Visual Studio 19 
-OpenCV 4.1.2
+OpenCV 4.5.1

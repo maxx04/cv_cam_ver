@@ -45,6 +45,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkStatus>
       </LinkStatus>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Xdcmake>
       <SuppressStartupBanner>false</SuppressStartupBanner>
@@ -82,9 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="cv_cam.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\t2.mp4" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

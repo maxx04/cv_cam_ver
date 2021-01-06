@@ -6,13 +6,19 @@ const String sensor::sensor_magnifyed_window = "magnify sensor";
 const String sensor::sensor_result_window = "result sensor";
 Mat* sensor::parent_image; 
 uint sensor::sensors_number = 0;
-const int sensor::size = 16;
+int sensor::size = 16;
 
-sensor::sensor(Mat * _parent_image, cv::Point2i p)
+sensor::sensor(Mat * _parent_image, cv::Point2i p, int _size)
 {
 
-	//assert(size > 12 && size < 96); // test auf Groesse
-	//assert(sz % 2 == 0); // test auf gerade Zahl
+	assert(_size > 12 && _size < 96); // test auf Groesse
+	assert(_size % 2 == 0); // test auf gerade Zahl
+
+	if (sensors_number < 2) //nur bei erstem sensor alles berechnen
+	{
+		parent_image = _parent_image;
+		size = _size;
+	}
 
 	position = p;
 
@@ -22,23 +28,16 @@ sensor::sensor(Mat * _parent_image, cv::Point2i p)
 
 	Rect roi(position.x, position.y, size, size);
 
-	(*_parent_image)(roi).copyTo(data);
+	(*_parent_image)(roi).copyTo(img);
 
 	//int bytes = sizeof(PixelColor);
 
-	if (sensors_number < 2) //nur bei erstem sensor alles berechnen
-	{
-		parent_image = _parent_image;
-	}
 }
 
 sensor::~sensor()
 {
 	sensors_number = (sensors_number > 0) ? sensors_number-1 : 0;
 }
-
-
-
 
 void sensor::set_image(Mat* input_image)
 {

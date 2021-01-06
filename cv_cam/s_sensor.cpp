@@ -1,15 +1,23 @@
 #include "s_sensor.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/features2d.hpp>
 
-s_sensor::s_sensor(Mat* parent_image, cv::Point2i p) : sensor(parent_image, p)
+s_sensor::s_sensor(Mat* parent_image, cv::Point2i p, int _size = 16) : sensor(parent_image, p, _size)
 {
-	test = 3;
+
 }
 
-void s_sensor::proceed(const cv::Mat* region_of_interest)
+void s_sensor::proceed()														       
 {
-	test = 5;
+	Rect roi(position.x, position.y, size, size);
+
+	(*parent_image)(roi).copyTo(img);
+
+	// erste Pixel Adresse abfragen
+	PixelColor* pixelPtr = (PixelColor*)img.data;
+
+	//PixelColor Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
 }
 
 void s_sensor::draw()
@@ -25,14 +33,17 @@ void s_sensor::draw()
 
 void s_sensor::draw_magnifyied()
 {
+	Mat out, out_1;
 
 	//CV_Assert((*input).type() == out.type());
 
 	Rect roi(position.x, position.y, size, size);
 
-	(*parent_image)(roi).copyTo(data);	// TODO pruefen ob notwendig ist
+	(*parent_image)(roi).copyTo(out);	// TODO pruefen ob notwendig ist
 
-	//Mat resMat;
+	//cvtColor(out, out_1, cv::COLOR_BGR2GRAY);
+
+
 
 	//cvtColor(out, resMat, COLOR_BGR2HSV);
 
@@ -46,12 +57,12 @@ void s_sensor::draw_magnifyied()
 	//cout << " sectors: " << (uint)sectors_nmb << endl;
 
 	//line segments
-
+	/*
 	Scalar c;
 	for each (segment sg in line_segments)
 	{
 		c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
-		line(data, sg.P1, sg.P2, c);
+		line(img, sg.P1, sg.P2, c);
 	}
 	/*
 	for (int i = 0; i < sectors_nmb; i++)
@@ -82,7 +93,7 @@ void s_sensor::draw_magnifyied()
 	*/
 
 	//keypoint anzeigen
-	//for each (Point p in key_points) out.at<PixelColor>(p.y, p.x) = PixelColor(255, 255, 0);
+	for each (Point p in key_points) out.at<PixelColor>(p.y, p.x) = PixelColor(255, 255, 0);
 
 	//Ringfarbe anzeigen
 	//circle(out, Point(get_size() / 2), 8, Scalar(P1.x, P1.y, P1.z), -1);
@@ -91,7 +102,7 @@ void s_sensor::draw_magnifyied()
 	//circle(out, Point(get_size() / 2), 4, Scalar(P2.x, P2.y, P2.z), -1);
 
 	//cvtColor(out, out, COLOR_HSV2BGR);
-	imshow(sensor_magnifyed_window, data);
+	imshow(sensor_magnifyed_window, img);
 
 #pragma region Test
 

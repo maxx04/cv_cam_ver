@@ -2,6 +2,7 @@
 #include "color_histogram.h"
 #include <iostream>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 /*#include "contours.h"
 #include "pyramide.h"*/					   
 
@@ -37,13 +38,14 @@ static void redraw_all(int /*arg*/, void*)
 
 	Mat tmp;
 	frame1.copyTo(tmp);
-	//cvtColor(tmp, tmp, COLOR_BGR2BHSV);
+	//cvtColor(tmp, tmp, COLOR_BGR2GRAY);
 
 	s_set -> select_sensor(sensor_nr);
 
- 	//pyr.draw_contours(&tmp);
+	// TODO bearbeite aktive sensor proceed
+	//s_set->proceed(sensor_nr);
 
-	//zeichne ausgewaehlte sensor
+	// zeichne ausgewaehlte sensor
 	s_set->draw(&tmp);
 
 	//zeige bild
@@ -139,7 +141,7 @@ int main(int argc, const char * argv[])
 
 	setMouseCallback(sensor::sensor_magnifyed_window, onMouse_color, 0);
 
-	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &sensor_nr, s_set-> number_sensors, redraw_all);
+	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &sensor_nr, s_set-> number_sensors, redraw_all); // <-- bei wechsel wird funktion aufgerufen
 	createTrackbar("pegel", sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
 
 	//////////////////
