@@ -68,3 +68,71 @@ PixelColor sensor::get_color(int x, int y, const Mat* input)
 	return a;
 }
 
+
+void sensor::draw()
+{
+	rectangle(*parent_image, Rect(position.x, position.y, size, size), Scalar(125, 0, 0), 1);
+
+	for each (Point pnt in key_points)
+	{
+		drawMarker(*parent_image, position + pnt, Scalar(0, 0, 255), MarkerTypes::MARKER_CROSS, 1);
+		//circle((*output_image), pos + pnt, 0, Scalar( 0, 0, 255));
+	}
+}
+
+void sensor::draw_magnifyied()
+{
+	Mat out;  // ausgabe image
+
+	//CV_Assert((*input).type() == out.type());
+
+	/* Blobsuche */
+
+
+	// berechne Grauwerte (konvertiere Bild)
+	cvtColor(img, out, cv::COLOR_BGR2GRAY);
+
+	set_kontrast(out);
+
+	// glaette ??
+
+	// finde Blobs
+
+	//cvtColor(out, out, COLOR_HSV2BGR);
+	imshow(sensor_magnifyed_window, out);
+
+}
+
+/// <summary>
+/// Berechnet maximale und minimale Grauwert. Dann aendert (erhoeht) kontrast.
+/// </summary>
+/// <param name="out">Mat GRAY</param>
+void sensor::set_kontrast(cv::Mat& out)
+{
+	// finde max wert
+	uint8_t max_val = 0;
+	for (int i = 0; i < out.cols; i++)
+		for (int j = 0; j < out.rows; j++)
+		{
+			max_val = max(max_val, out.at<uint8_t>(i, j));
+		}
+
+	// finde min wert
+	uint8_t min_val = 255;
+	for (int i = 0; i < out.cols; i++)
+		for (int j = 0; j < out.rows; j++)
+		{
+			min_val = min(min_val, out.at<uint8_t>(i, j));
+		}
+	
+	float k = ((float)(max_val - min_val)) / 254.0;
+
+	for (int i = 0; i < out.cols; i++)
+		for (int j = 0; j < out.rows; j++)
+		{
+			uint8_t l = out.at<uint8_t>(i, j);
+			int m = (l - min_val);
+			float x = (k != 0.0) ? (float)m / k : min_val;
+			out.at<uint8_t>(i, j) = (uint8_t)x;
+		}
+}

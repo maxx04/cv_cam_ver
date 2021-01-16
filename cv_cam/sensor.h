@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/features2d.hpp>
 #include "core.h"
 #include "segment.h"
 
@@ -12,7 +14,7 @@ using namespace std;
 class sensor
 {
 protected:
-	static uint sensors_number;	
+	static uint sensors_number;
 	static Mat* parent_image;
 
 	cv::Point2i position; // sensor position (obere-linke ecke)
@@ -29,15 +31,16 @@ public:
 	~sensor();
 
 	// analysieren pixeln und erzeugen segmente und linien
-	virtual void proceed() = 0; 
+	virtual void proceed() = 0;
+
 
 	// vergroesserte sensor abbilden
-	virtual void draw_magnifyied() = 0;
+	virtual void draw_magnifyied();
 
 	// markiert sensor auf dem bild **output image**
-	virtual void draw() = 0;	
+	virtual void draw();
 
-	// setzt aktuelles bild
+	// setzt aktuelles bild	für die Bearbeitung
 	void set_image(Mat* input_image);
 
 	// gibt keypoints in gemeinsame vektor ab
@@ -51,5 +54,9 @@ public:
 
 	// gibt sensorposition
 	inline cv::Point2i get_position() { return position; } 
+
+	// erhoeht Kontrast
+	virtual void set_kontrast(cv::Mat& out); 
+
 };
 

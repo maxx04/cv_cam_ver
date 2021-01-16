@@ -19,7 +19,7 @@ Mat frame0, frame1, fg0, fg1;
 
 //pyramide pyr;
 
-sensor_set* s_set; // alle Sensoren
+sensor_set<b_sensor>* s_set; // alle Sensoren
 //contours cnt;
 
 static void help()
@@ -42,7 +42,7 @@ static void redraw_all(int /*arg*/, void*)
 
 	s_set -> select_sensor(sensor_nr);
 
-	// TODO bearbeite aktive sensor proceed
+	// TODO bearbeite aktive sensor
 	//s_set->proceed(sensor_nr);
 
 	// zeichne ausgewaehlte sensor
@@ -129,7 +129,7 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0);
 
-	s_set = new sensor_set(frame0, 2800);	
+	s_set = new sensor_set <b_sensor>(frame0, 2800);	
 									    
 	//pyr.set_position(Point(500, 400));
 	

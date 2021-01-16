@@ -2,16 +2,18 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
+#include <iostream>
 
 s_sensor::s_sensor(Mat* parent_image, cv::Point2i p, int _size = 16) : sensor(parent_image, p, _size)
 {
 
 }
 
-void s_sensor::proceed()														       
+void s_sensor::proceed()
 {
 	Rect roi(position.x, position.y, size, size);
 
+	// speichere aktuelle kopie des Bildes
 	(*parent_image)(roi).copyTo(img);
 
 	// erste Pixel Adresse abfragen
@@ -20,99 +22,24 @@ void s_sensor::proceed()
 	//PixelColor Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
 }
 
-void s_sensor::draw()
-{
-	rectangle(*parent_image, Rect(position.x, position.y, size, size), Scalar(125, 0, 0), 1);
-
-	for each (Point pnt in key_points)
-	{
-		drawMarker(*parent_image, position + pnt, Scalar(0, 0, 255), MarkerTypes::MARKER_CROSS, 1);
-		//circle((*output_image), pos + pnt, 0, Scalar( 0, 0, 255));
-	}
-}
-
 void s_sensor::draw_magnifyied()
 {
-	Mat out, out_1;
+	Mat out;  // ausgabe image
 
 	//CV_Assert((*input).type() == out.type());
 
-	Rect roi(position.x, position.y, size, size);
+	/* Blobsuche */
 
-	(*parent_image)(roi).copyTo(out);	// TODO pruefen ob notwendig ist
+	// berechne Grauwerte (konvertiere Bild)
+	cvtColor(img, out, cv::COLOR_BGR2GRAY);
 
-	//cvtColor(out, out_1, cv::COLOR_BGR2GRAY);
+//	set_kontrast(out);
 
+	// glaette ??
 
-
-	//cvtColor(out, resMat, COLOR_BGR2HSV);
-
-	//plot_graph("plot");
-
-	//clr_hst.draw(pos);
-
-	//clr_hst.draw_base();
-
-	//cout << "keypoints: " << key_points.size(); // << " - nighbors: " << nighbors.size();
-	//cout << " sectors: " << (uint)sectors_nmb << endl;
-
-	//line segments
-	/*
-	Scalar c;
-	for each (segment sg in line_segments)
-	{
-		c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
-		line(img, sg.P1, sg.P2, c);
-	}
-	/*
-	for (int i = 0; i < sectors_nmb; i++)
-	{
-		cout << format(" > %3d %3d %3d - %2d - %2d"
-			, sectors[i].color.x
-			, sectors[i].color.y
-			, sectors[i].color.z
-			, sectors[i].start
-			, sectors[i].end) << endl;
-
-
-
-
-// sectors
-		uint8_t half_sz = size / 2;
-		for (int k = sectors[i].start; k < sectors[i].end; k++)
-		{
-			out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = sectors[i].color;
-			//OPTI
-			if( k == sectors[i].start)
-				out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = PixelColor(255,0,0);
-			if (k == sectors[i].end - 1)
-				out.at<PixelColor>(dy[k] + half_sz, dx[k] + half_sz) = PixelColor(0,0,255);
-		}
-
-	}
-	*/
-
-	//keypoint anzeigen
-	for each (Point p in key_points) out.at<PixelColor>(p.y, p.x) = PixelColor(255, 255, 0);
-
-	//Ringfarbe anzeigen
-	//circle(out, Point(get_size() / 2), 8, Scalar(P1.x, P1.y, P1.z), -1);
-
-	//Ringfarbe anzeigen
-	//circle(out, Point(get_size() / 2), 4, Scalar(P2.x, P2.y, P2.z), -1);
+	// finde Blobs
 
 	//cvtColor(out, out, COLOR_HSV2BGR);
-	imshow(sensor_magnifyed_window, img);
-
-#pragma region Test
-
-	//Mat hsvchannel[3];
-	//// The actual splitting.
-	//split(resMat, hsvchannel);
-
-	//imshow(sensor_result_window, hsvchannel[0]);
-
-#pragma endregion
-
+	imshow(sensor_magnifyed_window, out);
 
 }

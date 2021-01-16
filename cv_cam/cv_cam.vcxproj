@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="b_sensor.h" />
     <ClInclude Include="color_histogram.h" />
     <ClInclude Include="contours.h" />
     <ClInclude Include="core.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="s_sensor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="b_sensor.cpp" />
     <ClCompile Include="color_histogram.cpp" />
     <ClCompile Include="contours.cpp" />
     <ClCompile Include="core.cpp" />
