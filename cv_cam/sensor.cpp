@@ -3,6 +3,7 @@
 #include <opencv2/imgproc.hpp>
 
 const String sensor::sensor_magnifyed_window = "magnify sensor";
+const String sensor::sensor_magnifyed_window_last = "magnify sensor last";
 const String sensor::sensor_result_window = "result sensor";
 Mat* sensor::parent_image; 
 uint sensor::sensors_number = 0;
@@ -69,9 +70,9 @@ PixelColor sensor::get_color(int x, int y, const Mat* input)
 }
 
 
-void sensor::draw()
+void sensor::draw(Mat* output_image)
 {
-	rectangle(*parent_image, Rect(position.x, position.y, size, size), Scalar(125, 0, 0), 1);
+	rectangle(*output_image, Rect(position.x, position.y, size, size), Scalar(125, 0, 0), 1);
 
 	for each (Point pnt in key_points)
 	{

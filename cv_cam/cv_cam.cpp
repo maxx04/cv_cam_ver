@@ -15,7 +15,10 @@ int pegel = 8;
 const cv::String main_window = "frame";
 
 
-Mat frame0, frame1, fg0, fg1;
+/// <summary>
+/// aktuell bearbeitetes bild
+/// </summary>
+Mat frame0;
 
 //pyramide pyr;
 
@@ -35,15 +38,13 @@ const char* keys =
 
 static void redraw_all(int /*arg*/, void*)
 {
-
-	Mat tmp;
-	frame1.copyTo(tmp);
-	//cvtColor(tmp, tmp, COLOR_BGR2GRAY);
+							
+	Mat tmp; // buld für abbilden den selected sensores
+	frame0.copyTo(tmp);
 
 	s_set -> select_sensor(sensor_nr);
 
-	// TODO bearbeite aktive sensor
-	//s_set->proceed(sensor_nr);
+	s_set-> proceed(sensor_nr);
 
 	// zeichne ausgewaehlte sensor
 	s_set->draw(&tmp);
@@ -55,7 +56,7 @@ static void redraw_all(int /*arg*/, void*)
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set -> proceed(&frame1, pegel); // berechne sensoren neu
+	s_set -> proceed(&frame0, pegel); // berechne sensoren neu
 
 	redraw_all(0, 0);
 }
@@ -68,6 +69,11 @@ static void onMouse(int event, int x, int y, int, void*)
 		sensor_nr = s_set -> find_nearest_sensor(x, y);
 
 		cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
+
+		s_set->select_sensor(sensor_nr);
+
+		redraw_all(0, 0);
+
 	}
 
 	return;
@@ -79,7 +85,7 @@ static void onMouse_color(int event, int x, int y, int, void*)
 	{
 		//Draw color
 
-	 	PixelColor a = s_set -> get_color(x, y, &frame1);
+	 	PixelColor a = s_set -> get_color(x, y, &frame0);
 
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(a.z, a.y, a.x);
@@ -101,10 +107,10 @@ static void onMouse_color(int event, int x, int y, int, void*)
 		cout << format(" B:%3d G:%3d R:%3d", a.x, a.y, a.z);
 		cout << format("--H:%.0f S:%.2f V:%.2f -> %.3f", hsv.H, hsv.S, hsv.V, hsv.S*hsv.V) << endl;
 
-
+		redraw_all(0, 0);
 	}
 
-	redraw_all(0, 0);
+
 }
 
 int main(int argc, const char * argv[])
@@ -137,6 +143,7 @@ int main(int argc, const char * argv[])
 	setMouseCallback(main_window, onMouse, 0);
 
 	namedWindow(sensor::sensor_magnifyed_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
+	namedWindow(sensor::sensor_magnifyed_window_last, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 	namedWindow(sensor::sensor_result_window,  WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 
 	setMouseCallback(sensor::sensor_magnifyed_window, onMouse_color, 0);
@@ -152,16 +159,13 @@ int main(int argc, const char * argv[])
 	//Mat tmp1;
 
 
-	for (int i = 0; cam.read(frame1); i++)
+	for (int i = 0; cam.read(frame0); i++)
 	{
 		const double start = (double)getTickCount();
 
 // --------------------------------------------------------------------------------
 //	finde keypoints, histogramms
-		s_set -> proceed(&frame1, pegel);
-
-		//pyr.query(&frame1, pegel);
-
+		s_set -> proceed(&frame0, pegel);
 
 //	finde konturen, bereiche mit gleichen histogrammen
 		//cnt = s_set -> find_contours();

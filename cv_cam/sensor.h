@@ -24,6 +24,7 @@ protected:
 
 public:
 	const static String sensor_magnifyed_window; // CV Fenstername für aktive Sensor
+	const static String sensor_magnifyed_window_last; // CV Fenstername für aktive Sensor letztes bild
 	const static String sensor_result_window;	 // CV Fenstername für ergebniss aktiven Sensor
 	static int size; // Groesse (Höhe) des Sensors ist gleich Breite
 
@@ -38,7 +39,7 @@ public:
 	virtual void draw_magnifyied();
 
 	// markiert sensor auf dem bild **output image**
-	virtual void draw();
+	virtual void draw(Mat* output_image);
 
 	// setzt aktuelles bild	für die Bearbeitung
 	void set_image(Mat* input_image);

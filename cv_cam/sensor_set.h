@@ -38,7 +38,7 @@ public:
 		for (size_t i = 0; i < sensors_number; i++)
 		{
 			Point sensor_position(distribution_x(generator), distribution_y(generator));
-			sensors.push_back((sensor*) new T(&frame0, sensor_position, 32));	// HACK notwendige sensor erstellen
+			sensors.push_back((sensor*) new T(&frame0, sensor_position, 32));	
 		}
 
 		number_sensors = sensors.size();
@@ -84,13 +84,13 @@ public:
 
 	void draw(Mat* input_image) // zeichnet Sensor auf vergrössertem Bild
 	{
-		set_image(input_image);
+	//	set_image(input_image);
 
 		// vergroesserte fenster mit "key points" anzeigen
 		sensors[selected_sensor]->draw_magnifyied();
 
 		// auf dem gesamtbild
-		sensors[selected_sensor]->draw();
+		sensors[selected_sensor]->draw(input_image);
 
 	};
 
@@ -99,7 +99,10 @@ public:
 	{
 		set_image(input_image);
 
-		for (sensor* m : sensors) m->proceed();
+
+
+	// HACK aktuell ausgeblendet
+	//	for (sensor* m : sensors) m->proceed();
 	}	
 
 	void proceed(int n) 
@@ -139,10 +142,10 @@ public:
 		return sensors[selected_sensor]->get_color(x, y, input);
 	};
 
-	sensor* get_sensor
-	(int n);
-
-	//contours find_contours(void);
+	sensor* get_sensor(int n)
+	{
+		return sensors[n];
+	};
 
 };
 
