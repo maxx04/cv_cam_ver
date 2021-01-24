@@ -1,10 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include <opencv2/imgproc.hpp>
 #include <random>
 #include <iostream>
 
 #include "s_sensor.h"
+#include "m_sensor.h"
 #include "b_sensor.h"
 #include "contours.h"
 
@@ -18,15 +19,15 @@ template <class T>
 class sensor_set 
 {
 	vector<sensor*> sensors;  // Vektor aus Sensors
-	int selected_sensor = 0;   // actives Sensor zum Anzeigen
 
 public:
+	int selected_sensor = 0;   // actives Sensor zum Anzeigen
 	int number_sensors = 0;	// Anzahl erstellten Sensoren
 
-	// Erstellt Sensoren nach zufällige Position
-	sensor_set <T> (Mat input_frame, int sensors_number)
+	// Erstellt Sensoren nach zufï¿½llige Position
+	sensor_set <T> (Mat input_frame, int sensors_number, int _size)
 	{
-		int sensor_size = T(&frame0, Point(0, 0), 32).size;  // HACK nicht aendern, sonst fehler
+		int sensor_size = T(&frame0, Point(0, 0), _size).size;  // HACK nicht aendern, sonst fehler
 
 		default_random_engine generator;
 
@@ -34,11 +35,11 @@ public:
 		uniform_int_distribution<int> distribution_y(0, frame0.rows - sensor_size);
 
 		// sensoren erstellen und verteilen
-		// auch sensortyp soll definiert sein, über Tamplate zu loesen
+		// auch sensortyp soll definiert sein, ï¿½ber Tamplate zu loesen
 		for (size_t i = 0; i < sensors_number; i++)
 		{
 			Point sensor_position(distribution_x(generator), distribution_y(generator));
-			sensors.push_back((sensor*) new T(&frame0, sensor_position, 32));	
+			sensors.push_back((sensor*) new T(&frame0, sensor_position, sensor_size));
 		}
 
 		number_sensors = sensors.size();
@@ -76,15 +77,15 @@ public:
 		}
 	};
 
-	// setzt aktuelles bild
+	// setzt aktuelles bild	und kopiert ROI
 	void set_image (Mat* input_image)
 	{
 		sensors[0]->set_image(input_image);
+
 	};
 
-	void draw(Mat* input_image) // zeichnet Sensor auf vergrössertem Bild
+	void draw(Mat* input_image) // zeichnet Sensor auf vergrï¿½ssertem Bild
 	{
-	//	set_image(input_image);
 
 		// vergroesserte fenster mit "key points" anzeigen
 		sensors[selected_sensor]->draw_magnifyied();
@@ -94,7 +95,7 @@ public:
 
 	};
 
-	// auswertet alle Sensore mit Bild input_image und pegel für die Schlüsselpunkte
+	// auswertet alle Sensore mit Bild input_image und pegel fï¿½r die Schlï¿½sselpunkte
  	void proceed( Mat* input_image, int pegel )
 	{
 		set_image(input_image);
@@ -103,6 +104,8 @@ public:
 
 	// HACK aktuell ausgeblendet
 	//	for (sensor* m : sensors) m->proceed();
+
+		sensors[selected_sensor]->proceed();
 	}	
 
 	void proceed(int n) 
@@ -112,10 +115,10 @@ public:
 		sensors[n]->proceed();
 	};   // sensor n 
 
-	// füllt Schlüsselpunkte in key_points aus bild input // TODO Bild ist nicht notwendig
+	// fï¿½llt Schlï¿½sselpunkte in key_points aus bild input // TODO Bild ist nicht notwendig
 	//void add_keypoints(key_points_set* key_points, Mat* input);
 
-	// findet nächste Sensor
+	// findet nï¿½chste Sensor
 	int find_nearest_sensor(int x, int y) 
 	{
 		int ret = 0;
@@ -137,9 +140,9 @@ public:
 	}
 
 	// gibt Farbe vom Pixel x,y aus dem Bild input 
-	PixelColor get_color(int x, int y, const Mat* input)
+	PixelColor get_color(int x, int y)
 	{
-		return sensors[selected_sensor]->get_color(x, y, input);
+		return sensors[selected_sensor]->get_color(x, y);
 	};
 
 	sensor* get_sensor(int n)

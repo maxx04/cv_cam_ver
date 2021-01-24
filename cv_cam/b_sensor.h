@@ -6,15 +6,9 @@
 /// <summary>       
 /// Sensor Brutal force. Ermittelt sensor verschiebung in x und y
 /// </summary>
-class b_sensor :
-    public sensor
-
-
+class b_sensor : public sensor
 {
 public: 
-
-    // vergroesserte sensor abbilden
-    virtual void draw_magnifyied();
 
         /// <summary>
         /// erstellt sensor
@@ -22,14 +16,15 @@ public:
         /// <param name="parent_image">eingangsbild</param>
         /// <param name="p">position des sensors im bild von links / oben</param>
         /// <param name="_size">sensorgroesse in pixeln</param>         
-        b_sensor(Mat* parent_image, cv::Point2i p, int _size); // init
+        b_sensor(Mat* parent_image, Point2i p, int _size); // init
 
         /// <summary>
         /// analysieren pixeln und ermitteln bewegung
         /// aktuelles image in sensor drin  
         /// </summary>
         void proceed(); 
-
+        // vergroesserte sensor abbilden
+        virtual void draw_magnifyied();
 
 protected:
           

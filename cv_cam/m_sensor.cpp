@@ -1,25 +1,20 @@
 #include "m_sensor.h"
 #include "plot.hpp"
 
-/* Statische Klassenvariablen */
+//* Statische Klassenvariablen */
 
-const String m_sensor::sensor_magnifyed_window = "magnify sensor";
-const String m_sensor::sensor_result_window = "result sensor";
 uint m_sensor::index[POINTS_IN_CIRCLE];
 int8_t m_sensor::dx[POINTS_IN_CIRCLE];
 int8_t m_sensor::dy[POINTS_IN_CIRCLE];
 short m_sensor::smooth_index[9];
 uint m_sensor::sensors_number = 0;
-Mat m_sensor::out;
+int m_sensor::pegel = 7;
 
-m_sensor::m_sensor(Point p = Point(0, 0), uint sz = 16)
+m_sensor::m_sensor(Mat* parent_image, Point2i p, int _size = 16) : sensor(parent_image, p, _size)
 {
-	assert(sz > 12 && sz < 120); // test auf Groesse
-	assert(sz % 2 == 0); // test auf gerade Zahl
 
-	pos = p;
-
-	size = sz;
+	assert(_size >= 12 && _size <= 96); // test auf Groesse
+	assert(_size % 2 == 0); // test auf gerade Zahl
 
 	sectors_nmb = 0;
 
@@ -53,20 +48,14 @@ m_sensor::m_sensor(Point p = Point(0, 0), uint sz = 16)
 		smooth_index[1] = 1 + size;
 		smooth_index[2] = size;
 		smooth_index[3] = size - 1;
-		smooth_index[4] = - 1;
+		smooth_index[4] = -1;
 		smooth_index[5] = -1 - size;
-		smooth_index[6] = -size; 
+		smooth_index[6] = -size;
 		smooth_index[7] = -size + 1;
 		smooth_index[8] = 0;
 
 	}
 
-
-}
-
-m_sensor::m_sensor()
-{
-	m_sensor(Point(0, 0), 16);
 }
 
 m_sensor::~m_sensor()
@@ -74,15 +63,16 @@ m_sensor::~m_sensor()
 
 }
 
-void m_sensor::proceed(const Mat * input, int pegel)
+void m_sensor::proceed()
 {
 
-	// kopieren teil vom bild
-	Rect roi(pos.x, pos.y, size, size);
-	(*input)(roi).copyTo(out);
+	Rect roi(position.x, position.y, size, size);
+
+	// speichere aktuelle kopie des Bildes
+	(*parent_image)(roi).copyTo(img);
 
 	// erste Pixel Adresse abfragen
-	PixelColor* pixelPtr = (PixelColor*)out.data; 
+	PixelColor* pixelPtr = (PixelColor*)img.data;
 
 	PixelColor Pixel0 = *(pixelPtr + index[POINTS_IN_CIRCLE - 1]); //letzte pixel
 	PixelColor Pixel1, color;
@@ -117,7 +107,7 @@ void m_sensor::proceed(const Mat * input, int pegel)
 
 		//HACK Berechnungsmethode beachten!
 
-		values[i] = color_distance(Pixel0, Pixel1, color_distance_func::RGB_3SUM); 
+		values[i] = color_distance(Pixel0, Pixel1, color_distance_func::RGB_3SUM);
 		//color = middle_color(color,Pixel1); //für HSV soll anders sein?
 
 		search_sectors(Pixel1, pegel);
@@ -325,12 +315,12 @@ void m_sensor::search_sectors(Mat* sensor_mat, int pegel, const color_distance_f
 
 Point m_sensor::get_position()
 {
-	return pos;
+	return position;
 }
 
 void m_sensor::set_position(Point p)
 {
-	pos = p;
+	position = p;
 }
 
 Size m_sensor::get_size()
@@ -380,22 +370,22 @@ void m_sensor::smooth_values(uint8_t range)
 
 }
 
-void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_name)
+void m_sensor::draw_magnifyied()
 {
 
 	//CV_Assert((*input).type() == out.type());
 
-	Rect roi(pos.x, pos.y, size, size);
+	//Rect roi(position.x, position.y, size, size);
 
-	(*input)(roi).copyTo(out);
+	//(*input)(roi).copyTo(out);
 
 	Mat resMat;
 
-	cvtColor(out, resMat, COLOR_BGR2HSV);
+	cvtColor(img, resMat, COLOR_BGR2HSV);
 
 	plot_graph("plot");
 
-	clr_hst.draw(pos);
+	clr_hst.draw(position);
 
 	//clr_hst.draw_base();
 
@@ -408,7 +398,7 @@ void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_
 	for each (segment sg in line_segments)
 	{
 		c = Scalar(sg.C1.x, sg.C1.y, sg.C1.z);
-		line(out, sg.P1, sg.P2, c);
+		line(img, sg.P1, sg.P2, c);
 	}
 	/*
 	for (int i = 0; i < sectors_nmb; i++)
@@ -439,7 +429,7 @@ void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_
 	*/
 
 	//keypoint anzeigen
-	for each (Point p in key_points) out.at<PixelColor>(p.y, p.x) = PixelColor(255,255,0);
+	for each (Point p in key_points) img.at<PixelColor>(p.y, p.x) = PixelColor(255,255,0);
 
 	//Ringfarbe anzeigen
 	//circle(out, Point(get_size() / 2), 8, Scalar(P1.x, P1.y, P1.z), -1);
@@ -448,7 +438,7 @@ void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_
 	//circle(out, Point(get_size() / 2), 4, Scalar(P2.x, P2.y, P2.z), -1);
 
 	//cvtColor(out, out, COLOR_HSV2BGR);
-	imshow(magnifiyed_window_name, out);
+	imshow(sensor_magnifyed_window, img);
 
 #pragma region Test
 
@@ -456,6 +446,7 @@ void m_sensor::draw_magnifyied(const Mat* input, const String magnifiyed_window_
 	// The actual splitting.
 	split(resMat, hsvchannel);
 
+	// zeigt Hue
 	imshow(sensor_result_window, hsvchannel[0]);
 
 #pragma endregion
@@ -467,7 +458,7 @@ void m_sensor::draw(const Mat* output_image)
 {
 	for each(Point pnt in key_points)
 	{
-		  drawMarker(*output_image, pos + pnt, Scalar(0, 0, 255), MarkerTypes::MARKER_CROSS, 1);
+		  drawMarker(*output_image, position + pnt, Scalar(0, 0, 255), MarkerTypes::MARKER_CROSS, 1);
 		  //circle((*output_image), pos + pnt, 0, Scalar( 0, 0, 255));
 	}
 }
@@ -500,17 +491,17 @@ void m_sensor::get_points(vector<Point> * global_points)
 {
 	for each (Point p in key_points)
 	{
-		global_points->push_back(Point(pos + p));
+		global_points->push_back(Point(position + p));
 	}
 }
 
 bool m_sensor::intersection(Point mp) 
 {
 
-	if (mp.x < pos.x) return false;
-	if (mp.x > pos.x + (int)size) return false;
-	if (mp.y < pos.y) return false;
-	if (mp.y > pos.y + (int)size) return false;
+	if (mp.x < position.x) return false;
+	if (mp.x > position.x + (int)size) return false;
+	if (mp.y < position.y) return false;
+	if (mp.y > position.y + (int)size) return false;
 
 	return true;
 }
@@ -520,24 +511,24 @@ bool m_sensor::intersection(m_sensor* m)
 	int s = (int)size;
 	int sm = (int) m->size;
 
-	if (m-> pos.x + sm < pos.x) return false;
-	if (m-> pos.x > pos.x + s) return false;
-	if (m-> pos.y + sm < pos.y) return false;
-	if (m-> pos.y > pos.y + s) return false;
+	if (m-> position.x + sm < position.x) return false;
+	if (m-> position.x > position.x + s) return false;
+	if (m-> position.y + sm < position.y) return false;
+	if (m-> position.y > position.y + s) return false;
 
 	return true;
 }
 
 int m_sensor::get_distance_to_middle(int x, int y)
 {
-	int d1 = pos.x + size / 2 - x;
-	int d2 = pos.y + size / 2 - y;
+	int d1 = position.x + size / 2 - x;
+	int d2 = position.y + size / 2 - y;
 	return sqrt(d1*d1 + d2*d2);
 }
 
 PixelColor m_sensor::get_color(int x, int y, const Mat* input)
 {
-	PixelColor a = (*input).at<PixelColor>(pos.y + y, pos.x + x);
+	PixelColor a = (*input).at<PixelColor>(position.y + y, position.x + x);
 
 	//circle((*input), Point(pos.x + x, pos.y + y), 6, Scalar(a.x, a.y, a.z), -1);
 

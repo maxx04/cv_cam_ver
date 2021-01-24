@@ -42,12 +42,6 @@
     <ClInclude Include="contours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pyramide.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -81,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="contours.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pyramide.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sensor.cpp">

@@ -55,14 +55,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="block.h" />
     <ClInclude Include="b_sensor.h" />
     <ClInclude Include="color_histogram.h" />
     <ClInclude Include="contours.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="m_sensor.h" />
     <ClInclude Include="plot.hpp" />
-    <ClInclude Include="pyramide.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="segment.h" />
     <ClInclude Include="sensor.h" />
@@ -77,7 +75,6 @@
     <ClCompile Include="cv_cam.cpp" />
     <ClCompile Include="m_sensor.cpp" />
     <ClCompile Include="plot.cpp" />
-    <ClCompile Include="pyramide.cpp" />
     <ClCompile Include="segment.cpp" />
     <ClCompile Include="sensor.cpp" />
     <ClCompile Include="sensor_set.cpp" />

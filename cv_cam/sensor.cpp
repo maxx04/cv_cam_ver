@@ -12,7 +12,7 @@ int sensor::size = 16;
 sensor::sensor(Mat * _parent_image, cv::Point2i p, int _size)
 {
 
-	assert(_size > 12 && _size < 96); // test auf Groesse
+	assert(_size >= 12 && _size <= 96); // test auf Groesse
 	assert(_size % 2 == 0); // test auf gerade Zahl
 
 	if (sensors_number < 2) //nur bei erstem sensor alles berechnen
@@ -42,7 +42,7 @@ sensor::~sensor()
 
 void sensor::set_image(Mat* input_image)
 {
-	parent_image = input_image;
+	parent_image = input_image;	  //TODO Leistung
 }
 
 void sensor::get_keypoints(vector<Point>* global_points)
@@ -60,13 +60,10 @@ int sensor::get_distance_to_middle(int x, int y)
 	return sqrt(d1 * d1 + d2 * d2);
 }
 
-PixelColor sensor::get_color(int x, int y, const Mat* input)
+PixelColor sensor::get_color(int x, int y)
 {
-	PixelColor a = (*input).at<PixelColor>(position.y + y, position.x + x);
-
-	//circle((*input), Point(pos.x + x, pos.y + y), 6, Scalar(a.x, a.y, a.z), -1);
-
-	return a;
+	size_t a = img.elemSize();
+	return img.at<PixelColor>(y, x);
 }
 
 
@@ -87,17 +84,8 @@ void sensor::draw_magnifyied()
 
 	//CV_Assert((*input).type() == out.type());
 
-	/* Blobsuche */
-
-
 	// berechne Grauwerte (konvertiere Bild)
 	cvtColor(img, out, cv::COLOR_BGR2GRAY);
-
-	set_kontrast(out);
-
-	// glaette ??
-
-	// finde Blobs
 
 	//cvtColor(out, out, COLOR_HSV2BGR);
 	imshow(sensor_magnifyed_window, out);
@@ -110,30 +98,81 @@ void sensor::draw_magnifyied()
 /// <param name="out">Mat GRAY</param>
 void sensor::set_kontrast(cv::Mat& out)
 {
+	// nur Graubild kann verwendet werden
+	CV_Assert(out.elemSize() == 1);
+
 	// finde max wert
-	uint8_t max_val = 0;
-	for (int i = 0; i < out.cols; i++)
-		for (int j = 0; j < out.rows; j++)
-		{
-			max_val = max(max_val, out.at<uint8_t>(i, j));
-		}
+	PixelData max_val = max_pixel(out);
 
 	// finde min wert
-	uint8_t min_val = 255;
-	for (int i = 0; i < out.cols; i++)
-		for (int j = 0; j < out.rows; j++)
-		{
-			min_val = min(min_val, out.at<uint8_t>(i, j));
-		}
+	PixelData min_val = min_pixel(out);
 	
-	float k = ((float)(max_val - min_val)) / 254.0;
+	float k = ((float)(max_val.value - min_val.value)) / 254.0;
 
 	for (int i = 0; i < out.cols; i++)
 		for (int j = 0; j < out.rows; j++)
 		{
 			uint8_t l = out.at<uint8_t>(i, j);
-			int m = (l - min_val);
-			float x = (k != 0.0) ? (float)m / k : min_val;
+			int m = (l - min_val.value);
+			float x = (k != 0.0) ? (float)m / k : min_val.value;
 			out.at<uint8_t>(i, j) = (uint8_t)x;
 		}
+
+	out.at<uint8_t>(min_val.x, min_val.y) = (uint8_t)255;
+	out.at<uint8_t>(max_val.x, max_val.y) = (uint8_t)0;
+}
+
+PixelData sensor::max_pixel(cv::Mat& out)
+{
+	// nur Graubild kann verwendet werden
+	CV_Assert(out.elemSize() == 1);
+
+	// finde max wert
+	uint8_t i, j, i_max=0, j_max=0;
+	uint8_t max_val = 0, v;
+
+	for (i = 0; i < out.cols; i++)
+		for (j = 0; j < out.rows; j++)
+		{
+			v = out.at<uint8_t>(i, j);
+			if (max_val < v)
+			{
+				max_val = v;
+				i_max = i;
+				j_max = j;
+			}
+		}
+
+
+
+	return { i_max, j_max, max_val };
+
+}
+
+PixelData sensor::min_pixel(cv::Mat& out)
+{
+	// nur Graubild kann verwendet werden
+	CV_Assert(out.elemSize() == 1);
+
+	// finde max wert
+	uint8_t i, j, i_min=255, j_min=255;
+	uint8_t min_val = 255, v; // HACK
+
+	for (i = 0; i < out.cols; i++)
+		for (j = 0; j < out.rows; j++)
+		{
+			v = out.at<uint8_t>(i, j);
+			if (min_val > v)
+			{
+				min_val = v;
+				i_min = i;
+				j_min = j;
+			}
+			
+		}
+
+
+
+	return { i_min, j_min, min_val };
+
 }

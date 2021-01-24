@@ -34,7 +34,6 @@ public:
 	// analysieren pixeln und erzeugen segmente und linien
 	virtual void proceed() = 0;
 
-
 	// vergroesserte sensor abbilden
 	virtual void draw_magnifyied();
 
@@ -51,13 +50,16 @@ public:
 	int get_distance_to_middle(int x, int y);  
 
 	// gibt farbe vom pixel in sensorkoordinaten
-	PixelColor get_color(int x, int y, const Mat* input); 
+	PixelColor get_color(int x, int y); 
 
 	// gibt sensorposition
 	inline cv::Point2i get_position() { return position; } 
 
 	// erhoeht Kontrast
-	virtual void set_kontrast(cv::Mat& out); 
+	virtual void set_kontrast(cv::Mat& out);
+	virtual PixelData max_pixel(cv::Mat& out);
+	virtual PixelData min_pixel(cv::Mat& out);
+
 
 };
 
