@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sensor.h"
 #include "opencv2/opencv.hpp"
 #include "core.h"
 #include "segment.h"
@@ -15,15 +16,16 @@ using namespace std;
 #define BIG_SECTOR 6
 
 /* Sensor der analysiert vorbestimtes Bereich */
-class m_sensor
+class m_sensor: public sensor
 {
 
 	static uint index[POINTS_IN_CIRCLE]; // Index fuer Versatz in Speicher für Bogenpixel
 	static int8_t dx[POINTS_IN_CIRCLE]; // delta x in Koordinaten Bogenpixel vom Sensormitte
 	static int8_t dy[POINTS_IN_CIRCLE];		// delta y in Koordinaten Bogenpixel vom Sensormitte
-	static Mat out;							// Ausschnitt für Sensor zur Bearbeitung // TODO aktive Sensor nr zu abildung hinterlegen
+	//static Mat out;							// Ausschnitt für Sensor zur Bearbeitung // TODO aktive Sensor nr zu abildung hinterlegen
 	static uint sensors_number;				// Anzahl Sensoren für die Klasse
 	static short smooth_index[9];			// Glätten Wert für jedees Bogenpixel //TODO notwendig ?
+	static int pegel;
 
 	/* Einfarbige Sektor im Sensor (Bogen) */
 	struct Sector
@@ -33,8 +35,8 @@ class m_sensor
 		PixelColor color; /*Farbe des Sektors*/	
 	};
 
-	Point pos;	// Position in Bild (obere - linke Ecke) 
-	uint size;	// Groesse (Höhe) des Sensors ist gleich Breite
+//	Point position;	// Position in Bild (obere - linke Ecke) 
+//	uint size;	// Groesse (Höhe) des Sensors ist gleich Breite
 
 	/* Werte fuer entsprechenden Bogenpixel die für die 
 	Auswertung des Grenzen notwendig sind*/
@@ -91,17 +93,19 @@ class m_sensor
 
 public:
 
-	const static String sensor_magnifyed_window; // CV Fentername für aktive Sensor
-	const static String sensor_result_window;	 // CV Fentername für ergebniss aktiven Sensor
+	//const static String sensor_magnifyed_window; // CV Fentername für aktive Sensor
+	//const static String sensor_result_window;	 // CV Fentername für ergebniss aktiven Sensor
 
-	m_sensor(Point p, uint sz); // Konstruktor
-	m_sensor();	 // Konstruktor
+	m_sensor(Mat* parent_image, cv::Point2i p, int _size);
+	// Konstruktor
 	~m_sensor(); //	Destruktor
 
 	// Auswerten den Sensor aus dem Bild.
 	// input: Bild das verarbeitet wird.
 	// pegel: Schwelle die für die Keypointsfindung notwendig ist. [0...255]	
 	void proceed(const Mat* input, int pegel);
+
+	virtual void proceed();
 
 	// gibt Position des Sensors zurück
 	Point get_position();
@@ -125,7 +129,7 @@ public:
 	bool intersection(m_sensor* m);
 
 	// Zeigt Sensor aus dem Bild input im Fenster output
-	void draw_magnifyied(const Mat* input, const String output);
+	void draw_magnifyied();
 
 	// Abbildet Schlüsselpunkt auf dem Bild
 	void draw(const Mat* output_image);

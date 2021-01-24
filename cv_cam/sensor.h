@@ -16,9 +16,10 @@ class sensor
 protected:
 	static uint sensors_number;
 	static Mat* parent_image;
+	static Mat out; // ausgabebild fuer sensor
 
 	cv::Point2i position; // sensor position (obere-linke ecke)
-	cv::Mat img; // bildbereich in BGR format ??
+	cv::Mat img; // bildbereich fuer sensor in BGR format 
 	vector<cv::Point2i> key_points; // keypoints für den Sensor
 	vector<segment> line_segments; // erzeugte linien 
 
@@ -33,7 +34,6 @@ public:
 
 	// analysieren pixeln und erzeugen segmente und linien
 	virtual void proceed() = 0;
-
 
 	// vergroesserte sensor abbilden
 	virtual void draw_magnifyied();
@@ -51,13 +51,15 @@ public:
 	int get_distance_to_middle(int x, int y);  
 
 	// gibt farbe vom pixel in sensorkoordinaten
-	PixelColor get_color(int x, int y, const Mat* input); 
+	PixelColor get_color(int x, int y); 
 
 	// gibt sensorposition
 	inline cv::Point2i get_position() { return position; } 
 
 	// erhoeht Kontrast
-	virtual void set_kontrast(cv::Mat& out); 
+	virtual void set_kontrast(cv::Mat& out);
+	virtual PixelData max_pixel(cv::Mat& out);
+	virtual PixelData min_pixel(cv::Mat& out);
 
 };
 

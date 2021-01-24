@@ -41,12 +41,9 @@ static void redraw_all(int /*arg*/, void*)
 							
 	Mat tmp; // buld für abbilden den selected sensores
 	frame0.copyTo(tmp);
+	//cvtColor(frame0, tmp, cv::COLOR_BGR2GRAY);
 
-	s_set -> select_sensor(sensor_nr);
-
-	s_set-> proceed(sensor_nr);
-
-	// zeichne ausgewaehlte sensor
+	// markiere ausgewaehlte sensor
 	s_set->draw(&tmp);
 
 	//zeige bild
@@ -72,6 +69,8 @@ static void onMouse(int event, int x, int y, int, void*)
 
 		s_set->select_sensor(sensor_nr);
 
+		s_set->proceed(sensor_nr);
+
 		redraw_all(0, 0);
 
 	}
@@ -85,7 +84,9 @@ static void onMouse_color(int event, int x, int y, int, void*)
 	{
 		//Draw color
 
-	 	PixelColor a = s_set -> get_color(x, y, &frame0);
+
+
+	 	PixelColor a = s_set -> get_color(x, y);
 
 		HSV hsv(0.0, 0.0, 0.0);
 		RGB rgb(a.z, a.y, a.x);
@@ -107,7 +108,7 @@ static void onMouse_color(int event, int x, int y, int, void*)
 		cout << format(" B:%3d G:%3d R:%3d", a.x, a.y, a.z);
 		cout << format("--H:%.0f S:%.2f V:%.2f -> %.3f", hsv.H, hsv.S, hsv.V, hsv.S*hsv.V) << endl;
 
-		redraw_all(0, 0);
+		//redraw_all(0, 0);
 	}
 
 
@@ -133,9 +134,9 @@ int main(int argc, const char * argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	cam.read(frame0);
+	cam.read(frame0); // Ermittlung Bildgrösse
 
-	s_set = new sensor_set <b_sensor>(frame0, 2800);	
+	s_set = new sensor_set <b_sensor>(frame0, 1800, 96);	
 									    
 	//pyr.set_position(Point(500, 400));
 	
@@ -148,11 +149,11 @@ int main(int argc, const char * argv[])
 
 	setMouseCallback(sensor::sensor_magnifyed_window, onMouse_color, 0);
 
-	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &sensor_nr, s_set-> number_sensors, redraw_all); // <-- bei wechsel wird funktion aufgerufen
+	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &s_set->selected_sensor, s_set-> number_sensors, redraw_all); // <-- bei wechsel wird funktion aufgerufen
 	createTrackbar("pegel", sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
 
 	//////////////////
-
+																 
 	//vector<vector<Point>> contours;
 	//vector<Vec4i> hierarchy;
 	//Mat tmp2 = Mat::zeros(frame0.rows, frame0.cols, CV_8UC1);

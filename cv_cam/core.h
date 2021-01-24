@@ -3,8 +3,16 @@
 
 typedef cv::Point3_<uint8_t> PixelColor; 
 
+struct PixelData
+{
+	uint8_t x; // von oben links
+	uint8_t y;
+
+	uint8_t value;
+};
+
 const enum color_distance_func {
-	RGB_DISTANCE = 0,
+	RGB_DISTANCE,
 	RGB_SQUARE,
 	RGB_3SUM,
 	RGB_SUM_EACH_COLOR,
