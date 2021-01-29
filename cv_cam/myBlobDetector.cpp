@@ -2,7 +2,19 @@
 
 myBlobDetector::myBlobDetector(const myBlobDetector::Params _parameters)
 {
-    parameters = _parameters;
+    parameters = _parameters; 
+
+    p.thresholdStep = 70;
+    p.minThreshold = 10;
+    p.maxThreshold = 80;
+    p.filterByArea = false;
+    p.filterByCircularity = false;
+    p.filterByColor = false;
+    p.filterByConvexity = false;
+    p.filterByInertia = false;
+
+    sbd = cv::SimpleBlobDetector::create(p);
+
 }
 
 /// <summary>
@@ -14,7 +26,9 @@ void myBlobDetector::detect(cv::InputArray image, std::vector<cv::KeyPoint>& key
 {
     CV_Assert(image.channels() == 1);
 
-    keypoints.push_back(cv::KeyPoint({ 10.0, 10.0 }, 3.0));
+    sbd->detect(image, keypoints);
+
+  //  keypoints.push_back(cv::KeyPoint({ 10.0, 10.0 }, 3.0));
 
     // finde steigung
     // cirkular finde grenze

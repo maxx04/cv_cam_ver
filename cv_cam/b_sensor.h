@@ -11,6 +11,9 @@ class b_sensor : public sensor
 {
 public: 
 
+    PixelData min_val;
+    PixelData max_val;
+
         /// <summary>
         /// erstellt sensor
         /// </summary>

@@ -29,7 +29,6 @@ void b_sensor::proceed()
 
 	// speichere aktuelle kopie des Bildes
 	(*parent_image)(roi).copyTo(img);
-
 	
 	// berechne Grauwerte (konvertiere Bild)
 	 cvtColor(img, img, cv::COLOR_BGR2GRAY);
@@ -37,6 +36,12 @@ void b_sensor::proceed()
 	set_kontrast(img);
 	cv::medianBlur(img, img, 5);
 
+	// finde max wert
+	max_val = max_pixel(img);
+
+	// finde min wert
+	min_val = min_pixel(img);
+	
 	//split black / gray / white
 	//set_bw(&img);
 
@@ -46,18 +51,23 @@ void b_sensor::proceed()
 	// Detect blobs
 	blob_detector -> detect(img, keypoints);
 
+	img.copyTo(out);
+
 	// Draw detected blobs as red circles.
 	// DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures
 	// the size of the circle corresponds to the size of blob
 
+	//HACK out hat 3 chennels
 	drawKeypoints(img, keypoints, out, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
 	
-
 }
 
 void b_sensor::draw_magnifyied()
 {
+ 	// draw min max
+	out.at<PixelColor>(min_val.x, min_val.y) = PixelColor(255, 255, 255);
+	out.at<PixelColor>(max_val.x, max_val.y) = PixelColor(0, 0, 0);
 
 	imshow(sensor_magnifyed_window, img);
 	imshow(sensor_result_window, out);
@@ -72,11 +82,11 @@ void b_sensor::set_bw(Mat* gray)
 		{
 			uint8_t l = gray->at<uint8_t>(i, j);
 
-			if (l > 200)
+			if (l > 225)
 			{
 				gray->at<uint8_t>(i, j) = 255;
 			}
-			else if (l < 100)
+			else if (l < 25)
 			{
 				gray->at<uint8_t>(i, j) = 0;
 			}

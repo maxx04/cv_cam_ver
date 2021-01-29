@@ -65,11 +65,12 @@ static void onMouse(int event, int x, int y, int, void*)
 	{
 		sensor_nr = s_set -> find_nearest_sensor(x, y);
 
-		cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
-
 		s_set->select_sensor(sensor_nr);
 
 		s_set->proceed(sensor_nr);
+			
+		// set trackbar nur nach dem proceed denn wird redraw benutzt
+		cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
 
 		redraw_all(0, 0);
 
@@ -149,7 +150,7 @@ int main(int argc, const char * argv[])
 
 	setMouseCallback(sensor::sensor_magnifyed_window, onMouse_color, 0);
 
-	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &s_set->selected_sensor, s_set-> number_sensors, redraw_all); // <-- bei wechsel wird funktion aufgerufen
+	createTrackbar("sensor N", sensor::sensor_magnifyed_window, &s_set->selected_sensor, s_set-> number_sensors, pegel_check); // <-- bei wechsel wird funktion aufgerufen
 	createTrackbar("pegel", sensor::sensor_magnifyed_window, &pegel, 100, pegel_check);
 
 	//////////////////

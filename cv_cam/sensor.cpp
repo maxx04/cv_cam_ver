@@ -63,7 +63,16 @@ int sensor::get_distance_to_middle(int x, int y)
 
 PixelColor sensor::get_color(int x, int y)
 {
+	// nur Graubild kann verwendet werden
+	CV_Assert(img.elemSize() == 1);
+
 	size_t a = img.elemSize();
+
+	if (a == 1)
+	{	
+		uint8_t p = img.at<uint8_t>(y, x);
+		return 	{ p, p, p };
+	}
 	return img.at<PixelColor>(y, x);
 }
 
@@ -119,8 +128,6 @@ void sensor::set_kontrast(cv::Mat& out)
 			out.at<uint8_t>(i, j) = (uint8_t)x;
 		}
 
-	out.at<uint8_t>(min_val.x, min_val.y) = (uint8_t)255;
-	out.at<uint8_t>(max_val.x, max_val.y) = (uint8_t)0;
 }
 
 PixelData sensor::max_pixel(cv::Mat& out)
