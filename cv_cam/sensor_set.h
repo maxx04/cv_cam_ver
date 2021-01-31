@@ -101,7 +101,7 @@ public:
 		set_image(input_image);
 
 
-
+//////////////////////////////////////////////////////////
 	// HACK aktuell ausgeblendet
 	//	for (sensor* m : sensors) m->proceed();
 

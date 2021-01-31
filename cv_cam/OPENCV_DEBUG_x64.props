@@ -6,9 +6,10 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(OPENCV_BUILD)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OPENCV_BUILD)\$(PlatformTarget)\vc15\bin;$(OPENCV_BUILD)\$(PlatformTarget)\vc15\lib;bin\Debug;$(OPENCV_DIR)\lib\Debug;$(OPENCV_DIR)\bin\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_BUILD)\bin\$(Configuration);$(OPENCV_BUILD)\lib\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkStatus>true</LinkStatus>
     </Link>

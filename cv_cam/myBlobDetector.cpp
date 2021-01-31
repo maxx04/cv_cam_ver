@@ -4,9 +4,9 @@ myBlobDetector::myBlobDetector(const myBlobDetector::Params _parameters)
 {
     parameters = _parameters; 
 
-    p.thresholdStep = 70;
+    p.thresholdStep = 50;
     p.minThreshold = 10;
-    p.maxThreshold = 80;
+    p.maxThreshold = 250;
     p.filterByArea = false;
     p.filterByCircularity = false;
     p.filterByColor = false;
@@ -22,13 +22,15 @@ myBlobDetector::myBlobDetector(const myBlobDetector::Params _parameters)
 /// </summary>
 /// <param name="image">eingang: graue image</param>
 /// <param name="keypoints">ausgabe: keypoints (mitte vom Blob)</param>
-void myBlobDetector::detect(cv::InputArray image, std::vector<cv::KeyPoint>& keypoints)
+void myBlobDetector::detect(cv::Mat image, std::vector<cv::KeyPoint>& keypoints)
 {
-    CV_Assert(image.channels() == 1);
+    CV_Assert(image.type() == CV_8UC1);
 
-    sbd->detect(image, keypoints);
+    blobs.LabelImage(image);
 
-  //  keypoints.push_back(cv::KeyPoint({ 10.0, 10.0 }, 3.0));
+    //sbd->detect(image, keypoints);
+
+    //keypoints.push_back(cv::KeyPoint({ 10.0, 10.0 }, 3.0));
 
     // finde steigung
     // cirkular finde grenze

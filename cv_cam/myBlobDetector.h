@@ -1,6 +1,8 @@
 #pragma once
 #include "opencv2/core.hpp"
 #include <opencv2/features2d.hpp>
+#include "cvb_contour.h"
+#include "cvb_blob_list.h"
 
 
 class myBlobDetector
@@ -37,14 +39,18 @@ public:
     //CV_WRAP static Ptr<myBlobDetector> create(const myBlobDetector::Params& parameters = myBlobDetector::Params());
     
     myBlobDetector(const myBlobDetector::Params parameters);
-    void detect(cv::InputArray image, std::vector<cv::KeyPoint>& keypoints); // , cv::InputArray mask = cv::noArray());
+    void detect(cv::Mat image, std::vector<cv::KeyPoint>& keypoints); // , cv::InputArray mask = cv::noArray());
 
     //CV_WRAP virtual String getDefaultName() const CV_OVERRIDE;
+
+    cvb::BlobList blobs;
 
 private:
 
     cv::SimpleBlobDetector::Params p;
 
     cv::Ptr<cv::SimpleBlobDetector> sbd;
+
+
 };
 
