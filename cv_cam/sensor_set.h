@@ -6,7 +6,8 @@
 
 #include "s_sensor.h"
 #include "m_sensor.h"
-#include "b_sensor.h"
+#include "bforce_sensor.h"
+#include "greyblob_sensor.h"
 #include "contours.h"
 
 class key_points_set;
@@ -77,22 +78,26 @@ public:
 		}
 	};
 
-	// setzt aktuelles bild	und kopiert ROI
+	// vorbereitet aktuelles bild und kopiert ROI
 	void set_image (Mat* input_image)
 	{
+
 		sensors[0]->set_image(input_image);
 
+		sensors[0]->prepare_frame(input_image);
 	};
 
-	void draw(Mat* input_image) // zeichnet Sensor auf vergr�ssertem Bild
+	void redraw(Mat* input_image) // zeichnet Sensor auf vergroessertem Bild
 	{
 
 		// vergroesserte fenster mit "key points" anzeigen
 		sensors[selected_sensor]->draw_magnifyied();
 
-		// auf dem gesamtbild
+		// markiere aktuelles sensor auf dem gesamtbild
 		sensors[selected_sensor]->draw(input_image);
 
+		// rendere 3 letzte shift - vektoren fuer alle sensoren
+		for (sensor* m : sensors) m->draw_shifts(input_image);
 	};
 
 	// auswertet alle Sensore mit Bild input_image und pegel f�r die Schl�sselpunkte
@@ -103,9 +108,9 @@ public:
 
 //////////////////////////////////////////////////////////
 	// HACK aktuell ausgeblendet
-	//	for (sensor* m : sensors) m->proceed();
+	for (sensor* m : sensors) m->proceed();
 
-		sensors[selected_sensor]->proceed();
+		//sensors[selected_sensor]->proceed();
 	}	
 
 	void proceed(int n) 
@@ -115,10 +120,7 @@ public:
 		sensors[n]->proceed();
 	};   // sensor n 
 
-	// f�llt Schl�sselpunkte in key_points aus bild input // TODO Bild ist nicht notwendig
-	//void add_keypoints(key_points_set* key_points, Mat* input);
-
-	// findet n�chste Sensor
+	// findet naechste Sensor
 	int find_nearest_sensor(int x, int y) 
 	{
 		int ret = 0;

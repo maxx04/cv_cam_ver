@@ -22,7 +22,7 @@ Mat frame0;
 
 //pyramide pyr;
 
-sensor_set<b_sensor>* s_set; // alle Sensoren
+sensor_set<bforce_sensor>* s_set; // alle Sensoren
 //contours cnt;
 
 static void help()
@@ -44,7 +44,7 @@ static void redraw_all(int /*arg*/, void*)
 	//cvtColor(frame0, tmp, cv::COLOR_BGR2GRAY);
 
 	// markiere ausgewaehlte sensor
-	s_set->draw(&tmp);
+	s_set->redraw(&tmp);
 
 	//zeige bild
 	imshow(main_window, tmp);
@@ -53,7 +53,7 @@ static void redraw_all(int /*arg*/, void*)
 
 static void pegel_check(int /*arg*/, void*)
 {
-	s_set -> proceed(&frame0, pegel); // berechne sensoren neu
+	//s_set -> proceed(&frame0, pegel); // berechne sensoren neu
 
 	redraw_all(0, 0);
 }
@@ -66,11 +66,9 @@ static void onMouse(int event, int x, int y, int, void*)
 		sensor_nr = s_set -> find_nearest_sensor(x, y);
 
 		s_set->select_sensor(sensor_nr);
-
-		s_set->proceed(sensor_nr);
 			
 		// set trackbar nur nach dem proceed denn wird redraw benutzt
-		cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
+		//cv::setTrackbarPos("sensor N", sensor::sensor_magnifyed_window, sensor_nr);
 
 		redraw_all(0, 0);
 
@@ -137,10 +135,8 @@ int main(int argc, const char * argv[])
 
 	cam.read(frame0); // Ermittlung Bildgrösse
 
-	s_set = new sensor_set <b_sensor>(frame0, 1800, 96);	
-									    
-	//pyr.set_position(Point(500, 400));
-	
+	s_set = new sensor_set <bforce_sensor>(frame0, 20, 96);	
+									    	
 	namedWindow(main_window, WINDOW_KEEPRATIO | WINDOW_GUI_EXPANDED);
 	setMouseCallback(main_window, onMouse, 0);
 
@@ -163,23 +159,27 @@ int main(int argc, const char * argv[])
 
 	for (int i = 0; cam.read(frame0); i++)
 	{
-		const double start = (double)getTickCount();
+   		const double start = (double)getTickCount();
+
+// Vorbereite Frame
+
 
 // --------------------------------------------------------------------------------
 //	finde keypoints, histogramms
 		s_set -> proceed(&frame0, pegel);
 
-//	finde konturen, bereiche mit gleichen histogrammen
-		//cnt = s_set -> find_contours();
 // --------------------------------------------------------------------------------
 
 		const double timeSec = (getTickCount() - start) / getTickFrequency();
 
 		cout << i << " - ElapsedTime: " << timeSec << " sec " << endl;
 
+		// ein letztes bild zu verarbeitung ist notwendig
+		if (i < 1)	continue;
+
 		redraw_all(0, 0);
 
-		char c = waitKey();
+		char c = waitKey(2000);
 
 		if (c == 'q')
 		{
@@ -187,6 +187,7 @@ int main(int argc, const char * argv[])
 		}
 	}
 
+	waitKey();
 
  	return 0;
 }

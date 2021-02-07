@@ -17,10 +17,11 @@ protected:
 	static uint sensors_number;
 	static Mat* parent_image;
 	static Mat out; // ausgabebild fuer sensor
+	static Mat prepared_frame; // gesamtframe die war vorbereited fuer aktuelle bearbeitung
 
 	cv::Point2i position; // sensor position (obere-linke ecke)
-	cv::Mat img; // bildbereich fuer sensor in BGR format 
-	vector<cv::Point2i> key_points; // keypoints für den Sensor
+	cv::Mat img; // bildbereich fuer sensor
+	vector<cv::Point2i> key_points; // keypoints für den Sensor	in Koordinaten
 	vector<segment> line_segments; // erzeugte linien 
 
 public:
@@ -41,6 +42,8 @@ public:
 	// markiert sensor auf dem bild **output image**
 	virtual void draw(Mat* output_image);
 
+	void draw_shifts(Mat* output_image);
+
 	// setzt aktuelles bild	für die Bearbeitung
 	void set_image(Mat* input_image);
 
@@ -56,10 +59,16 @@ public:
 	// gibt sensorposition
 	inline cv::Point2i get_position() { return position; } 
 
-	// erhoeht Kontrast
+	/// <summary>
+	/// Normalise image
+	/// gleiche ist cv::normalise
+	/// </summary>
+	/// <param name="out">verweis auf das Bild der soll normalisiert werden</param>
 	virtual void set_kontrast(cv::Mat& out);
 	virtual PixelData max_pixel(cv::Mat& out);
 	virtual PixelData min_pixel(cv::Mat& out);
 
+	// vorbereite eingangsbild
+	virtual void prepare_frame(cv::Mat* frame);
 };
 

@@ -48,10 +48,13 @@
     <ClInclude Include="s_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="b_sensor.h">
+    <ClInclude Include="myBlobDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="myBlobDetector.h">
+    <ClInclude Include="bforce_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="greyblob_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,10 +89,13 @@
     <ClCompile Include="s_sensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="b_sensor.cpp">
+    <ClCompile Include="myBlobDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="myBlobDetector.cpp">
+    <ClCompile Include="bforce_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="greyblob_sensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

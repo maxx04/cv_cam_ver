@@ -58,10 +58,11 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="b_sensor.h" />
+    <ClInclude Include="bforce_sensor.h" />
     <ClInclude Include="color_histogram.h" />
     <ClInclude Include="contours.h" />
     <ClInclude Include="core.h" />
+    <ClInclude Include="greyblob_sensor.h" />
     <ClInclude Include="myBlobDetector.h" />
     <ClInclude Include="m_sensor.h" />
     <ClInclude Include="plot.hpp" />
@@ -72,11 +73,12 @@
     <ClInclude Include="s_sensor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="b_sensor.cpp" />
+    <ClCompile Include="bforce_sensor.cpp" />
     <ClCompile Include="color_histogram.cpp" />
     <ClCompile Include="contours.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="cv_cam.cpp" />
+    <ClCompile Include="greyblob_sensor.cpp" />
     <ClCompile Include="myBlobDetector.cpp" />
     <ClCompile Include="m_sensor.cpp" />
     <ClCompile Include="plot.cpp" />

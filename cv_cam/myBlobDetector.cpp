@@ -26,9 +26,19 @@ void myBlobDetector::detect(cv::Mat image, std::vector<cv::KeyPoint>& keypoints)
 {
     CV_Assert(image.type() == CV_8UC1);
 
-    blobs.LabelImage(image);
+    //blobs.LabelImage(image);
+    //blobs.FilterByArea(10, 500);
 
-    //sbd->detect(image, keypoints);
+    //cv::KeyPoint k;
+
+    //for (auto& a_blob : blobs.get_BlobsList()) {
+
+    //    k.pt = a_blob->get_Centroid();
+
+    //    keypoints.push_back(k);
+    //}
+
+    sbd->detect(image, keypoints);
 
     //keypoints.push_back(cv::KeyPoint({ 10.0, 10.0 }, 3.0));
 
